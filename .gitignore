@@ -1,0 +1,9 @@
+# Go binaries
+*.exe
+*.exe~
+*.test
+*.out
+
+# Logs un temp faili
+*.log
+*.tmp
