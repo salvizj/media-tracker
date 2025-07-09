@@ -10,6 +10,8 @@ import (
 	"media_tracker/internal/models"
 	"media_tracker/internal/types"
 
+	"log"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,13 +19,13 @@ func MoviesHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		movies, err := models.GetAllMovies(db)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Neizdevās ielādēt filmas")
+			log.Println("Error loading movies:", err)
+			c.String(http.StatusInternalServerError, "Failed to load movies")
 			return
 		}
 
 		data := types.LayoutTmplData{
 			Title:           "Filmas",
-			Message:         "Labākās filmas visos laikos!",
 			ContentTemplate: "content_movies",
 			Movies:          movies,
 		}
@@ -38,7 +40,7 @@ func CreateMovie(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
-		m.Date = time.Now()
+		m.Date = time.Now().Format("2006-01-02")
 		if err := models.InsertMovie(db, &m); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create movie"})
 			return

@@ -2,13 +2,16 @@ package models
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Movie struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
-	Date time.Time
+	Date string `json:"date"`
+}
+
+type MovieInput struct {
+	Name string `json:"name"`
 }
 
 func CreateMoviesTable(db *sql.DB) error {

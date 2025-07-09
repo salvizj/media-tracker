@@ -13,6 +13,9 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 	r := gin.Default()
 	r.SetHTMLTemplate(tmpl)
 
+	r.Static("/public", "./public")
+	r.StaticFile("/index.js", "./public/index.js")
+
 	// UI routes
 	r.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
 	r.GET("/movies", handlers.MoviesHandler(db, tmpl))

@@ -2,15 +2,20 @@ package models
 
 import (
 	"database/sql"
-	"time"
 )
 
 type ManhwaAndManga struct {
 	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	Status  string `json:"status"`
-	Date    time.Time
-	Chapter int `json:"chapter"`
+	Date    string `json:"date"`
+	Chapter int    `json:"chapter"`
+}
+
+type ManhwaAndMangaInput struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	Chapter int    `json:"chapter"`
 }
 
 func CreateManhwaAndMangaTable(db *sql.DB) error {

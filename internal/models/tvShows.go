@@ -2,16 +2,22 @@ package models
 
 import (
 	"database/sql"
-	"time"
 )
 
 type TVShow struct {
 	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	Status  string `json:"status"`
-	Date    time.Time
-	Season  int `json:"season"`
-	Episode int `json:"episode"`
+	Date    string `json:"date"`
+	Season  int    `json:"season"`
+	Episode int    `json:"episode"`
+}
+
+type TVShowInput struct {
+	Name    string `json:"name"`
+	Status  string `json:"status"`
+	Season  int    `json:"season"`
+	Episode int    `json:"episode"`
 }
 
 func CreateTVShowsTable(db *sql.DB) error {

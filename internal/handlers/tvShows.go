@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"time"
 
 	"media_tracker/internal/models"
 	"media_tracker/internal/types"
@@ -16,7 +17,7 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tvShows, err := models.GetAllTVShows(db)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Neizdevās ielādēt TV šovus")
+			c.String(http.StatusInternalServerError, "Failed to load tv shows")
 			return
 		}
 
@@ -31,10 +32,17 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 
 func CreateTVShow(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var tvShow models.TVShow
-		if err := c.BindJSON(&tvShow); err != nil {
+		var input models.TVShowInput
+		if err := c.BindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
+		}
+		tvShow := models.TVShow{
+			Name:    input.Name,
+			Status:  input.Status,
+			Season:  input.Season,
+			Episode: input.Episode,
+			Date:    time.Now().Format("2006-01-02"),
 		}
 		if err := models.InsertTVShow(db, &tvShow); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create record"})
