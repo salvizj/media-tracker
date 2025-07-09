@@ -1,9 +1,17 @@
-# Go binaries
 *.exe
 *.exe~
 *.test
 *.out
 
-# Logs un temp faili
 *.log
 *.tmp
+
+node_modules/
+
+package-lock.json
+yarn.lock
+
+dist/
+build/
+
+.env

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd "$(dirname "$0")/.." || exit 1
+
+npx tailwindcss -i ./public/tailwind.css -o ./dist/output.css --watch &
+TAILWIND_PID=$!
+
+go run cmd/media_tracker/main.go
+
+kill $TAILWIND_PID

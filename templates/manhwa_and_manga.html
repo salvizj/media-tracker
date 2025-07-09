@@ -1,0 +1,10 @@
+{{define "content_manhwa_and_manga"}}
+<h2 class="text-xl font-semibold">Manhwa un Manga</h2>
+<ul>
+	{{range .ManhwaAndManga}}
+	<li><strong>{{.Name}}</strong> ({{.Date}}) - ID: {{.ID}}</li>
+	{{else}}
+	<li>No manhwa or manga</li>
+	{{end}}
+</ul>
+{{end}}

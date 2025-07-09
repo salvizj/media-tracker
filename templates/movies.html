@@ -1,0 +1,16 @@
+{{define "content_movies"}}
+<script src="../public/index.js"></script>
+<h2 class="text-xl font-semibold">Movies</h2>
+<form id="movieForm">
+	<input type="text" id="name" name="name" placeholder="Name" required />
+	<button type="submit">Submit</button>
+</form>
+<ul>
+	{{range .Movies}}
+	<li><strong>{{.Name}}</strong> ({{.Date}}) - ID: {{.ID}}</li>
+	{{else}}
+	<li>No Movies</li>
+	{{end}}
+</ul>
+
+{{end}}

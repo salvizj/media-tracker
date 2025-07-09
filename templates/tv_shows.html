@@ -1,0 +1,10 @@
+{{define "content_tv_shows"}}
+<h2 class="text-xl font-semibold">TV shows</h2>
+<ul>
+	{{range .TvShows}}
+	<li><strong>{{.Name}}</strong> ({{.Date}}) - ID: {{.ID}}</li>
+	{{else}}
+	<li>No TV shows</li>
+	{{end}}
+</ul>
+{{end}}
