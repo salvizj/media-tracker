@@ -30,6 +30,7 @@ func main() {
 	defer db.Close()
 	tmpl, err := template.ParseFiles(
 		"templates/layout.html",
+		"templates/index.html",
 		"templates/movies.html",
 		"templates/tv_shows.html",
 		"templates/manhwa_and_manga.html",

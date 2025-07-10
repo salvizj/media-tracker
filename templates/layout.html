@@ -7,7 +7,7 @@
 		<link href="/public/dist/output.css" rel="stylesheet" />
 	</head>
 
-	<body class="bg-slate-900 text-gray-100 min-h-screen flex flex-col">
+	<body class="bg-slate-900 text-gray-100 min-h-screen">
 		<header class="mb-6 px-6 pt-6">
 			<h1
 				class="text-4xl font-extrabold text-teal-400 drop-shadow-lg select-none"
@@ -17,34 +17,35 @@
 		</header>
 
 		<nav
-			class="flex gap-8 bg-teal-700 bg-opacity-90 rounded-md px-8 py-4 shadow-lg mx-6"
+			class="flex flex-wrap items-center justify-start gap-4 bg-teal-700 bg-opacity-90 rounded-md px-6 py-4 shadow-lg mx-4"
 		>
 			<a
 				href="/tv-shows"
-				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1 text-center"
 			>
 				TV Shows
 			</a>
 			<a
 				href="/manhwa-and-manga"
-				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1 text-center"
 			>
 				Manhwa & Manga
 			</a>
 			<a
 				href="/movies"
-				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1 text-center"
 			>
 				Movies
 			</a>
 		</nav>
 
-		<main class="flex-grow px-6 py-8 max-w-5xl mx-auto w-full">
+		<main class="px-6 py-8 max-w-full mx-auto w-full">
 			{{if eq .ContentTemplate "content_manhwa_and_manga"}} {{template
 			"content_manhwa_and_manga" .}} {{else if eq .ContentTemplate
 			"content_movies"}} {{template "content_movies" .}} {{else if eq
 			.ContentTemplate "content_tv_shows"}} {{template "content_tv_shows"
-			.}} {{end}}
+			.}} {{else if eq .ContentTemplate "content_index"}} {{template
+			"content_index" .}} {{end}}
 		</main>
 
 		<footer
