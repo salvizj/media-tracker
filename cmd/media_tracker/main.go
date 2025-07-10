@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
@@ -8,6 +9,8 @@ import (
 	"media_tracker/internal/storage"
 	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -15,6 +18,10 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+
+	mode := flag.String("mode", "debug", "set gin mode: debug or release")
+	flag.Parse()
+	gin.SetMode(*mode)
 
 	db, err := storage.New("./media_tracker.db")
 	if err != nil {
@@ -31,7 +38,7 @@ func main() {
 		log.Fatalf("Cannot parse templates: %v", err)
 	}
 	fmt.Printf("Started on http://localhost:%s\n", port)
-	err = http.ListenAndServe(":"+port, router.NewRouter(db.DB, tmpl))
+	err = http.ListenAndServe("0.0.0.0:"+port, router.NewRouter(db.DB, tmpl))
 	if err != nil {
 		log.Fatalf("Server error: %v", err)
 	}

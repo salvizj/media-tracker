@@ -4,7 +4,8 @@
 		"tailwindcss": "^4.1.11"
 	},
 	"scripts": {
-		"start": "go run cmd/media_tracker/main.go ",
+		"start": "go run cmd/media_tracker/main.go --mode=release",
+		"start-dev": "go run cmd/media_tracker/main.go --mode=debug",
 		"build-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css",
 		"watch-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css --watch",
 		"build-go": "mkdir -p bin && go build -o bin/media_tracker ./cmd/media_tracker",
