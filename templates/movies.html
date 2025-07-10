@@ -1,56 +1,77 @@
 {{define "content_movies"}}
-<h2 class="text-2xl font-bold mb-4 text-teal-200">Movies</h2>
-<form id="movieForm" class="flex gap-2 mb-6">
+<h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">Movies</h2>
+<form
+	id="movieForm"
+	class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto"
+>
 	<input
 		type="text"
 		id="name"
 		name="name"
-		placeholder="Name"
+		placeholder="Movie Name"
 		required
-		class="px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+		class="w-full sm:flex-1 px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 	/>
 	<button
 		type="submit"
-		class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+		class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded font-semibold transition"
 	>
 		Add Movie
 	</button>
 </form>
+
 <ul class="space-y-2">
 	{{range .Movies}}
 	<li
-		class="bg-white/80 rounded px-4 py-2 shadow flex items-center"
+		class="flex flex-col bg-white/90 rounded px-4 py-2 shadow"
 		data-id="{{.ID}}"
 	>
-		<span class="font-semibold text-gray-800 movie-name">{{.Name}}</span>
-		<span class="ml-auto text-sm text-gray-500">{{.Date}}</span>
-		<button class="edit-movie-btn ml-2 text-blue-500" type="button">
-			Edit
-		</button>
-		<button class="delete-movie-btn ml-2 text-red-500" type="button">
-			Delete
-		</button>
-	</li>
-	<li
-		class="edit-movie-form-container"
-		style="display: none"
-		data-id="{{.ID}}"
-	>
-		<form class="edit-movie-form flex gap-2">
+		<div class="flex items-center justify-between">
+			<div class="flex flex-col">
+				<span class="font-semibold text-gray-800">{{.Name}}</span>
+				<span class="text-sm text-gray-500 mt-0.5">{{.Date}}</span>
+			</div>
+			<div class="flex gap-2">
+				<button
+					class="movie-action-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition"
+					type="button"
+					data-method="DELETE"
+				>
+					Delete
+				</button>
+				<button
+					class="movie-action-btn bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded font-semibold transition"
+					type="button"
+					data-method="PUT"
+				>
+					Edit
+				</button>
+			</div>
+		</div>
+
+		<form
+			class="edit-movie-form flex gap-2 max-w-xs mt-2 hidden mx-auto"
+			data-id="{{.ID}}"
+		>
+			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="date" value="{{.Date}}" />
 			<input
 				type="text"
 				name="name"
 				value="{{.Name}}"
 				required
-				class="px-2 py-1 border rounded"
+				class="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-400"
 			/>
 			<button
 				type="submit"
-				class="bg-teal-500 text-white px-2 py-1 rounded"
+				class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded font-semibold transition"
 			>
 				Save
 			</button>
-			<button type="button" class="cancel-edit-movie-btn text-gray-500">
+			<button
+				type="button"
+				class="cancel-edit-movie-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition"
+			>
 				Cancel
 			</button>
 		</form>
@@ -59,4 +80,5 @@
 	<li class="text-gray-300 italic">No Movies</li>
 	{{end}}
 </ul>
+
 {{end}}

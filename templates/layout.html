@@ -7,19 +7,39 @@
 		<link href="/public/dist/output.css" rel="stylesheet" />
 	</head>
 
-	<body class="bg-slate-500 p-6">
-		<header class="mb-6">
-			<h1 class="text-4xl font-bold">Media tracker</h1>
+	<body class="bg-slate-900 text-gray-100 min-h-screen flex flex-col">
+		<header class="mb-6 px-6 pt-6">
+			<h1
+				class="text-4xl font-extrabold text-teal-400 drop-shadow-lg select-none"
+			>
+				Media Tracker
+			</h1>
 		</header>
+
 		<nav
-			class="flex flex-row gap-4 no-underline text-teal-200 border px-4 py-2"
+			class="flex gap-8 bg-teal-700 bg-opacity-90 rounded-md px-8 py-4 shadow-lg mx-6"
 		>
-			<a href="/tv-shows">TV shows</a>
-			<a href="/manhwa-and-manga">Manhwa and manga</a>
-			<a href="/movies">Movies</a>
+			<a
+				href="/tv-shows"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+			>
+				TV Shows
+			</a>
+			<a
+				href="/manhwa-and-manga"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+			>
+				Manhwa & Manga
+			</a>
+			<a
+				href="/movies"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 pb-1"
+			>
+				Movies
+			</a>
 		</nav>
 
-		<main>
+		<main class="flex-grow px-6 py-8 max-w-5xl mx-auto w-full">
 			{{if eq .ContentTemplate "content_manhwa_and_manga"}} {{template
 			"content_manhwa_and_manga" .}} {{else if eq .ContentTemplate
 			"content_movies"}} {{template "content_movies" .}} {{else if eq
@@ -27,8 +47,10 @@
 			.}} {{end}}
 		</main>
 
-		<footer class="mt-10 text-center text-sm text-gray-500">
-			Media tracker github.com/salvizj
+		<footer
+			class="mt-12 py-4 text-center text-sm text-teal-300 select-none"
+		>
+			Media tracker — github.com/salvizj
 		</footer>
 	</body>
 	<script src="/public/index.js"></script>
