@@ -6,8 +6,9 @@
 	"scripts": {
 		"build-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css",
 		"watch-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css --watch",
-		"start-server": "go run cmd/media_tracker/main.go",
-		"build-and-start": "npm run build-css && npm run start-server"
+		"start-go": "go run cmd/media_tracker/main.go",
+		"build-go": "go build -o bin/media_tracker ./cmd/media_tracker",
+		"build-all": "npm run build-css && npm run build-go"
 	},
 	"devDependencies": {
 		"concurrently": "^9.2.0"
