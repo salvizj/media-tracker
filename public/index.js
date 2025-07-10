@@ -2,14 +2,19 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Form submissions
 	setupForms()
 
+	setupFilterByStatus()
+
 	// Movie actions
-	setupDeleteButtonsForMovies()
-	setupEditAndCancelButtonsForMovieEditForm()
 	handleEditMovieForms()
+	setupDeleteButtons("movies")
 
 	// Manhwa and manga actions
+	setupDeleteButtons("manhwa-and-manga")
+	setupEditAndCancelButtons("manhwa-and-manga")
 
 	// TV show actions
+	setupDeleteButtons("tv-shows")
+	setupEditAndCancelButtons("tv-shows")
 })
 
 function setupForms() {
@@ -27,56 +32,55 @@ function setupForms() {
 	})
 }
 
-function setupDeleteButtonsForMovies() {
+function setupDeleteButtons(type) {
 	document
-		.querySelectorAll(".movie-action-btn[data-method='DELETE']")
+		.querySelectorAll(`.${type}-action-btn[data-method='DELETE']`)
 		.forEach((btn) => {
 			btn.addEventListener("click", (e) => {
 				e.preventDefault()
-				const li = btn.closest("li")
-				const id = li.getAttribute("data-id")
-				deleteMovie(id)
+				const id = btn.closest("li[data-id]").getAttribute("data-id")
+				console.log(id)
+				let confirmationMessage =
+					"Are you sure you want to delete this item?"
+				if (type === "movies")
+					confirmationMessage =
+						"Are you sure you want to delete this movie?"
+				else if (type === "tv-shows")
+					confirmationMessage =
+						"Are you sure you want to delete this TV show?"
+				else if (type === "manhwa-and-manga")
+					confirmationMessage =
+						"Are you sure you want to delete this manhwa?"
+				deleteItem(type, id, confirmationMessage)
 			})
 		})
 }
 
-function setupEditAndCancelButtonsForMovieEditForm() {
+function setupEditAndCancelButtons(type) {
 	document
-		.querySelectorAll(".movie-action-btn[data-method='PUT']")
+		.querySelectorAll(`.${type}-action-btn[data-method='PUT']`)
 		.forEach((btn) => {
 			btn.addEventListener("click", () => {
-				const li = btn.closest("li[data-id]")
+				const li = btn.closest(`li[data-id]`)
 				const id = li.getAttribute("data-id")
 				const editForm = document.querySelector(
-					`.edit-movie-form[data-id="${id}"]`
+					`.edit-${type}-form[data-id="${id}"]`
 				)
-				if (editForm) {
-					editForm.style.display = "flex"
-				}
-				if (li) {
-					const movieActionBtnDiv = li.querySelector("div")
-					if (movieActionBtnDiv) {
-						movieActionBtnDiv.style.display = "none"
-					}
-				}
+				if (editForm) editForm.style.display = "flex"
+				const btnDiv = li.querySelector("div")
+				if (btnDiv) btnDiv.style.display = "none"
 			})
 		})
 
-	document.querySelectorAll(".cancel-edit-movie-btn").forEach((btn) => {
+	document.querySelectorAll(`.cancel-edit-${type}-btn`).forEach((btn) => {
 		btn.addEventListener("click", () => {
-			const editForm = btn.closest(".edit-movie-form")
+			const editForm = btn.closest(`.edit-${type}-form`)
 			if (!editForm) return
 			const id = editForm.getAttribute("data-id")
 			const li = document.querySelector(`li[data-id="${id}"]`)
-			if (editForm) {
-				editForm.style.display = "none"
-			}
-			if (li) {
-				const movieActionBtnDiv = li.querySelector("div")
-				if (movieActionBtnDiv) {
-					movieActionBtnDiv.style.display = "flex"
-				}
-			}
+			if (editForm) editForm.style.display = "none"
+			const btnDiv = li.querySelector("div")
+			if (btnDiv) btnDiv.style.display = "flex"
 		})
 	})
 }
@@ -115,9 +119,9 @@ function handleFormSubmit(formId, apiPath, fields, method = "POST") {
 	})
 }
 
-function deleteMovie(id) {
-	if (confirm("Are you sure you want to delete this movie?")) {
-		fetch(`api/movies/${id}`, {
+function deleteItem(type, id, confirmationMessage) {
+	if (confirm(confirmationMessage)) {
+		fetch(`api/${type}/${id}`, {
 			method: "DELETE",
 		})
 			.then(() => location.reload())
@@ -145,6 +149,23 @@ function handleEditMovieForms() {
 			} catch (error) {
 				console.error(error)
 			}
+		})
+	})
+}
+function setupFilterByStatus() {
+	document.querySelectorAll(".filter-btn").forEach((btn) => {
+		btn.addEventListener("click", function () {
+			const status = this.getAttribute("data-status")
+			document.querySelectorAll("ul li[data-status]").forEach((li) => {
+				if (
+					status === "All" ||
+					li.getAttribute("data-status") === status
+				) {
+					li.style.display = ""
+				} else {
+					li.style.display = "none"
+				}
+			})
 		})
 	})
 }

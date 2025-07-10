@@ -1,13 +1,17 @@
 {{define "content_tv_shows"}}
-<h2 class="text-2xl font-bold mb-4 text-teal-200">TV Shows</h2>
-<form id="tvShowForm" class="flex gap-2 mb-6">
+<h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">TV Shows</h2>
+
+<form
+	id="tvShowForm"
+	class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-4xl mx-auto"
+>
 	<input
 		type="text"
 		id="tvShowName"
 		name="name"
-		placeholder="Name"
+		placeholder="TV Show Name"
 		required
-		class="px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+		class="w-full sm:flex-1 min-w-[200px] px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 	/>
 	<input
 		type="number"
@@ -16,7 +20,7 @@
 		placeholder="Season"
 		min="1"
 		required
-		class="px-3 py-2 w-24 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+		class="w-28 min-w-[70px] px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 	/>
 	<input
 		type="number"
@@ -25,13 +29,13 @@
 		placeholder="Episode"
 		min="1"
 		required
-		class="px-3 py-2 w-24 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+		class="w-28 min-w-[70px] px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 	/>
 	<select
 		id="tvShowStatus"
 		name="status"
 		required
-		class="px-3 py-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400"
+		class="px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 	>
 		<option value="Watching">Watching</option>
 		<option value="Completed">Completed</option>
@@ -39,7 +43,7 @@
 	</select>
 	<button
 		type="submit"
-		class="bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600 transition"
+		class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded font-semibold transition"
 	>
 		Add TV Show
 	</button>
@@ -47,61 +51,134 @@
 
 <div class="mb-4 flex gap-2">
 	<button
-		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		type="button"
+		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200  bg-teal-700 bg-opacity-90 rounded-md px-4 py-2 shadow-lg"
 		data-status="All"
 	>
 		All
 	</button>
 	<button
-		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		type="button"
+		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 bg-teal-700 bg-opacity-90 rounded-md px-4 py-2 shadow-lg"
 		data-status="Watching"
 	>
-		Watching
+	Watching
 	</button>
 	<button
-		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
-		data-status="Dropped"
-	>
-		Dropped
-	</button>
-	<button
-		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		type="button"
+		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200  bg-teal-700 bg-opacity-90 rounded-md px-4 py-2 shadow-lg"
 		data-status="Completed"
 	>
 		Completed
+	</button>
+	<button
+		type="button"
+		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200  bg-teal-700 bg-opacity-90 rounded-md px-4 py-2 shadow-lg"
+		data-status="Dropped"
+	>
+		Dropped
 	</button>
 </div>
 
 <ul class="space-y-2">
 	{{range .TVShows}}
 	<li
-		class="bg-white/80 rounded px-4 py-2 shadow flex items-center"
+		class="flex flex-col bg-white/90 rounded px-4 py-2 shadow "
 		data-status="{{.Status}}"
+		data-id="{{.ID}}"
 	>
-		<span class="font-semibold text-gray-800">{{.Name}}</span>
-		<span class="ml-auto text-sm text-gray-500">{{.Date}}</span>
-		<span class="ml-auto text-sm text-gray-500">{{.Status}}</span>
+		<div class="flex items-center justify-between">
+			<div class="flex flex-col">
+				<span class="font-semibold text-gray-800">{{.Name}}</span>
+				<span class="text-sm text-gray-500 mt-0.5">{{.Date}}</span>
+			</div>
+			<div class="">
+				<span class="text-sm text-gray-500 mt-0.5">
+					Season {{.Season}}, Episode {{.Episode}}
+				</span>
+			</div>
+			<div class="flex gap-2 items-center">
+				<span
+				class="text-sm font-semibold px-2 py-1 rounded border
+				  {{if eq .Status "Watching"}} text-yellow-600 border-yellow-600
+				  {{else if eq .Status "Completed"}} text-teal-600 border-teal-600
+				  {{else if eq .Status "Dropped"}} text-red-600 border-red-600
+				  {{else}} text-gray-600 border-gray-600
+				  {{end}}"
+			  >
+				{{.Status}}
+			  </span>
+			  
+				<button
+					class="tv-shows-action-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition"
+					type="button"
+					data-method="DELETE"
+				>
+					Delete
+				</button>
+				<button
+					class="tv-shows-action-btn bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded font-semibold transition"
+					type="button"
+					data-method="PUT"
+				>
+					Edit
+				</button>
+			</div>
+		</div>
+
+		<form
+			class="edit-tvshow-form flex gap-2 max-w-xs mt-2 hidden mx-auto"
+			data-id="{{.ID}}"
+		>
+			<input type="hidden" name="id" value="{{.ID}}" />
+			<input
+				type="text"
+				name="name"
+				value="{{.Name}}"
+				required
+				class="flex-1 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-400"
+			/>
+			<input
+				type="number"
+				name="season"
+				value="{{.Season}}"
+				min="1"
+				required
+				class="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-400"
+			/>
+			<input
+				type="number"
+				name="episode"
+				value="{{.Episode}}"
+				min="1"
+				required
+				class="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-400"
+			/>
+			<select
+				name="status"
+				class="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-400"
+				required
+			>
+				<option value="Watching" {{if eq .Status "Watching"}}selected{{end}}>Watching</option>
+				<option value="Completed" {{if eq .Status "Completed"}}selected{{end}}>Completed</option>
+				<option value="Dropped" {{if eq .Status "Dropped"}}selected{{end}}>Dropped</option>
+			</select>
+			<button
+				type="submit"
+				class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded font-semibold transition"
+			>
+				Save
+			</button>
+			<button
+				type="button"
+				class="cancel-edit-tvshow-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded font-semibold transition"
+			>
+				Cancel
+			</button>
+		</form>
 	</li>
 	{{else}}
-	<li class="text-gray-300 italic">No TV shows</li>
+	<li class="text-gray-300 italic text-center">No TV shows</li>
 	{{end}}
 </ul>
-
-<script>
-	document.querySelectorAll(".filter-btn").forEach((btn) => {
-		btn.addEventListener("click", function () {
-			const status = this.getAttribute("data-status")
-			document.querySelectorAll("ul li[data-status]").forEach((li) => {
-				if (
-					status === "All" ||
-					li.getAttribute("data-status") === status
-				) {
-					li.style.display = ""
-				} else {
-					li.style.display = "none"
-				}
-			})
-		})
-	})
-</script>
 {{end}}
