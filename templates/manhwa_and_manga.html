@@ -35,14 +35,66 @@
 		Add Manhwa/Manga
 	</button>
 </form>
+<div class="mb-4 flex gap-2">
+	<button
+		type="button"
+		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		data-status="All"
+	>
+		All
+	</button>
+	<button
+		type="button"
+		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		data-status="Reading"
+	>
+		Reading
+	</button>
+	<button
+		type="button"
+		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		data-status="Completed"
+	>
+		Completed
+	</button>
+	<button
+		type="button"
+		class="filter-btn bg-teal-500 text-white px-3 py-1 rounded"
+		data-status="Dropped"
+	>
+		Dropped
+	</button>
+</div>
 <ul class="space-y-2">
 	{{range .ManhwaAndManga}}
-	<li class="bg-white/80 rounded px-4 py-2 shadow flex items-center">
+	<li
+		class="bg-white/80 rounded px-4 py-2 shadow flex items-center"
+		data-status="{{.Status}}"
+	>
 		<span class="font-semibold text-gray-800">{{.Name}}</span>
 		<span class="ml-auto text-sm text-gray-500">{{.Date}}</span>
+		<span class="ml-auto text-sm text-gray-500">{{.Status}}</span>
+		<span class="ml-auto text-sm text-gray-500">{{.Chapter}}</span>
 	</li>
 	{{else}}
 	<li class="text-gray-300 italic">No manhwa or manga</li>
 	{{end}}
 </ul>
+<script>
+	document.querySelectorAll(".filter-btn").forEach((btn) => {
+		btn.addEventListener("click", function () {
+			const status = this.getAttribute("data-status")
+			document.querySelectorAll("ul li[data-status]").forEach((li) => {
+				if (
+					status === "All" ||
+					li.getAttribute("data-status") === status
+				) {
+					li.style.display = ""
+				} else {
+					li.style.display = "none"
+				}
+			})
+		})
+	})
+</script>
 {{end}}

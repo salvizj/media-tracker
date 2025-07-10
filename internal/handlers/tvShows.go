@@ -24,7 +24,7 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 		data := types.LayoutTmplData{
 			Title:           "TV shows",
 			ContentTemplate: "content_tv_shows",
-			TvShows:         tvShows,
+			TVShows:         tvShows,
 		}
 		c.HTML(http.StatusOK, "layout", data)
 	}

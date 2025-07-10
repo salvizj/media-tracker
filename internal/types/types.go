@@ -6,6 +6,6 @@ type LayoutTmplData struct {
 	Title           string
 	ContentTemplate string
 	Movies          []models.Movie
-	TvShows         []models.TVShow
+	TVShows         []models.TVShow
 	ManhwaAndManga  []models.ManhwaAndManga
 }
