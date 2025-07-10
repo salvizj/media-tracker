@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-	// Form submissions
 	setupForms()
-
+	setupSearchForms()
 	setupFilterByStatus()
 
 	// Movie actions
@@ -25,11 +24,21 @@ function setupForms() {
 		season: "number",
 		episode: "number",
 	})
-	handleFormSubmit("manhwaForm", "/api/manhwa-and-manga", {
+	handleFormSubmit("manhwaAndMangaForm", "/api/manhwa-and-manga", {
 		name: "string",
 		status: "string",
 		chapter: "number",
 	})
+}
+
+function setupSearchForms() {
+	setupSearchForm("movieSearchForm", "movie-item", "movie-item-name")
+	setupSearchForm("tvShowSearchForm", "tv-show-item", "tv-show-item-name")
+	setupSearchForm(
+		"manhwaAndMangaSearchForm",
+		"manhwa-and-manga-item",
+		"manhwa-and-manga-item-name"
+	)
 }
 
 function setupDeleteButtons(type) {
@@ -103,7 +112,6 @@ function handleFormSubmit(formId, apiPath, fields, method = "POST") {
 
 			body[field] = value
 		}
-
 		try {
 			const response = await fetch(apiPath, {
 				method,
@@ -168,4 +176,27 @@ function setupFilterByStatus() {
 			})
 		})
 	})
+}
+function setupSearchForm(formId, itemClass, itemNameClass) {
+	const form = document.getElementById(formId)
+	if (form) {
+		const itemsWhole = document.querySelectorAll(`.${itemClass}`)
+		const searchInput = form.querySelector('input[name="name"]')
+		searchInput.addEventListener("input", function () {
+			const searchVal = searchInput.value.trim().toLowerCase()
+
+			itemsWhole.forEach((item) => {
+				const itemName = item.querySelector(`.${itemNameClass}`)
+				const itemNameText = itemName
+					? itemName.textContent.toLowerCase()
+					: ""
+
+				if (itemNameText.includes(searchVal)) {
+					item.style.display = ""
+				} else {
+					item.style.display = "none"
+				}
+			})
+		})
+	}
 }
