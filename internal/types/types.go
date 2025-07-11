@@ -9,4 +9,5 @@ type LayoutTmplData struct {
 	TVShows         []models.TVShow
 	ManhwaAndManga  []models.ManhwaAndManga
 	IsLoggedIn      bool
+	Error           string
 }

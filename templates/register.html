@@ -2,14 +2,36 @@
 
 <div class="flex items-center justify-center md:p-20 p-6">
 	<form class="register-form flex flex-col gap-4" method="post">
-		<input type="email" name="email" placeholder="Email" required />
+		<input
+			type="email"
+			class="sm:w-28 min-w-[100px] px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+			name="email"
+			placeholder="Email"
+			required
+		/>
 		<input
 			type="password"
 			name="password"
 			placeholder="Password"
 			required
+			class="sm:w-28 min-w-[100px] px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
 		/>
-		<button type="submit">Register</button>
+		<input
+			type="password"
+			name="confirm_password"
+			placeholder="Confirm Password"
+			required
+			class="sm:w-28 min-w-[100px] px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+		/>
+		<button
+			type="submit"
+			class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+		>
+			Register
+		</button>
+		{{if .Error}}
+		<p class="text-red-500">{{.Error}}</p>
+		{{end}}
 	</form>
 </div>
 {{end}}
