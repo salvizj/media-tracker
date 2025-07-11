@@ -1,57 +1,62 @@
 {{define "layout"}}
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{{.Title}}</title>
-    <link href="/public/dist/output.css" rel="stylesheet" />
-  </head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{{.Title}}</title>
+		<link href="/public/dist/output.css" rel="stylesheet" />
+	</head>
 
-  <body class="bg-slate-800 text-gray-100 min-h-screen">
-    <header class="mb-6 px-6 pt-6">
-      <h1
-        class="text-4xl font-extrabold text-teal-400 drop-shadow-lg select-none"
-      >
-        Media Tracker
-      </h1>
-    </header>
+	<body class="bg-slate-800 text-gray-100 min-h-screen">
+		<header class="mb-6 px-6 pt-6">
+			<h1
+				class="text-4xl font-extrabold text-teal-400 drop-shadow-lg select-none"
+			>
+				Media Tracker
+			</h1>
+		</header>
 
-    <nav
-      class="flex flex-wrap items-center justify-center gap-4 px-6 py-4 mx-4"
-    >
-      <a
-        href="/tv-shows"
-        class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
-      >
-        TV Shows
-      </a>
-      <a
-        href="/manhwa-and-manga"
-        class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
-      >
-        Manhwa & Manga
-      </a>
-      <a
-        href="/movies"
-        class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
-      >
-        Movies
-      </a>
-    </nav>
+		<nav
+			class="flex flex-wrap items-center justify-center gap-4 px-6 py-4 mx-4"
+		>
+			<a
+				href="/tv-shows"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				TV Shows
+			</a>
+			<a
+				href="/manhwa-and-manga"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				Manhwa & Manga
+			</a>
+			<a
+				href="/movies"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				Movies
+			</a>
+		</nav>
 
-    <main class="w-full max-w-screen px-4 sm:px-6 md:px-8 mx-auto">
-      {{if eq .ContentTemplate "content_manhwa_and_manga"}} {{template
-      "content_manhwa_and_manga" .}} {{else if eq .ContentTemplate
-      "content_movies"}} {{template "content_movies" .}} {{else if eq
-      .ContentTemplate "content_tv_shows"}} {{template "content_tv_shows" .}}
-      {{else if eq .ContentTemplate "content_index"}} {{template "content_index"
-      .}} {{end}}
-    </main>
+		<main
+			class="w-full max-w-screen px-4 sm:px-6 md:px-8 mx-auto box-border"
+		>
+			{{if eq .ContentTemplate "content_manhwa_and_manga"}} {{template
+			"content_manhwa_and_manga" .}} {{else if eq .ContentTemplate
+			"content_movies"}} {{template "content_movies" .}} {{else if eq
+			.ContentTemplate "content_tv_shows"}} {{template "content_tv_shows"
+			.}} {{else if eq .ContentTemplate "content_index"}} {{template
+			"content_index" .}} {{end}}
+		</main>
 
-    <footer class="mt-12 py-4 text-center text-sm text-teal-300 select-none">
-      Media tracker — github.com/salvizj
-    </footer>
-  </body>
-  <script src="/public/index.js"></script>
+		<footer
+			class="mt-12 py-4 text-center text-sm text-teal-300 select-none"
+		>
+			Media tracker — github.com/salvizj
+		</footer>
+	</body>
+	<script src="/public/index.js"></script>
 </html>
 {{end}}
