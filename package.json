@@ -1,17 +1,21 @@
 {
-	"dependencies": {
-		"@tailwindcss/cli": "^4.1.11",
-		"tailwindcss": "^4.1.11"
-	},
-	"scripts": {
-		"start": "go run cmd/media_tracker/main.go --mode=release",
-		"start-dev": "go run cmd/media_tracker/main.go --mode=debug",
-		"build-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css",
-		"watch-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css --watch",
-		"build-go": "mkdir -p bin && CGO_ENABLED=1 go build -o bin/media_tracker ./cmd/media_tracker",
-		"build-all": "npm install && npm run build-css && npm run build-go"
-	},
-	"devDependencies": {
-		"concurrently": "^9.2.0"
-	}
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  },
+  "scripts": {
+    "start": "go run cmd/media_tracker/main.go --mode=release",
+    "start-dev": "go run cmd/media_tracker/main.go --mode=debug",
+    "build-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css",
+    "watch-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css --watch",
+    "build-go": "mkdir -p bin && CGO_ENABLED=1 go build -o bin/media_tracker ./cmd/media_tracker",
+    "build-all": "npm install && npm run build-css && npm run build-go",
+    "format-go": "go fmt ./...",
+    "format-web": "prettier --write '**/*.{html,css,js,json,md,vue}'",
+    "format": "npm run format:go && npm run format:web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "prettier": "^3.6.2"
+  }
 }

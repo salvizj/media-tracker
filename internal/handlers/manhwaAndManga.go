@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"time"
 
 	"media_tracker/internal/models"
 	"media_tracker/internal/types"
@@ -31,12 +32,18 @@ func ManhwaAndMangaHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc 
 
 func CreateManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var m models.ManhwaAndManga
+		var m models.ManhwaAndMangaInput
 		if err := c.BindJSON(&m); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
-		if err := models.InsertManhwaAndManga(db, &m); err != nil {
+		manhwaAndManga := models.ManhwaAndManga{
+			Name:    m.Name,
+			Status:  m.Status,
+			Chapter: m.Chapter,
+			Date:    time.Now().Format("2006-01-02"),
+		}
+		if err := models.InsertManhwaAndManga(db, &manhwaAndManga); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
 			return
 		}

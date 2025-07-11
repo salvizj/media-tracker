@@ -35,13 +35,17 @@ func MoviesHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 
 func CreateMovie(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var m models.Movie
+		var m models.MovieInput
 		if err := c.BindJSON(&m); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
-		m.Date = time.Now().Format("2006-01-02")
-		if err := models.InsertMovie(db, &m); err != nil {
+		movie := models.Movie{
+			Name: m.Name,
+			Date: time.Now().Format("2006-01-02"),
+		}
+
+		if err := models.InsertMovie(db, &movie); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create movie"})
 			return
 		}

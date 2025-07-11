@@ -32,7 +32,7 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 
 func CreateTVShow(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var input models.TVShowInput
+		var input models.TVShow
 		if err := c.BindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return

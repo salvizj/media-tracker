@@ -1,202 +1,269 @@
 document.addEventListener("DOMContentLoaded", () => {
-	setupForms()
-	setupSearchForms()
-	setupFilterByStatus()
+  initializeForms();
+  initializeSearchForms();
+  initializeStatusFilter();
+  initializeDeleteButtons();
+  initializeEditAndCancelButtons();
+  initializeAllEditForms();
+  initializeIncrementDecrementButtons(
+    "tv-shows-increment-btn",
+    "tv-shows-decrement-btn",
+    "tv-shows-increment-and-decrement-form",
+    "tv-shows",
+    "episode",
+  );
+  initializeIncrementDecrementButtons(
+    "manhwa-and-manga-increment-btn",
+    "manhwa-and-manga-decrement-btn",
+    "manhwa-and-manga-increment-and-decrement-form",
+    "manhwa-and-manga",
+    "chapter",
+  );
+});
 
-	// Movie actions
-	handleEditMovieForms()
-	setupDeleteButtons("movies")
-
-	// Manhwa and manga actions
-	setupDeleteButtons("manhwa-and-manga")
-	setupEditAndCancelButtons("manhwa-and-manga")
-
-	// TV show actions
-	setupDeleteButtons("tv-shows")
-	setupEditAndCancelButtons("tv-shows")
-})
-
-function setupForms() {
-	handleFormSubmit("movieForm", "/api/movies", { name: "string" })
-	handleFormSubmit("tvShowForm", "/api/tv-shows", {
-		name: "string",
-		status: "string",
-		season: "number",
-		episode: "number",
-	})
-	handleFormSubmit("manhwaAndMangaForm", "/api/manhwa-and-manga", {
-		name: "string",
-		status: "string",
-		chapter: "number",
-	})
+function initializeEditAndCancelButtons() {
+  setupEditAndCancelButtonsForType("movies");
+  setupEditAndCancelButtonsForType("manhwa-and-manga");
+  setupEditAndCancelButtonsForType("tv-shows");
 }
 
-function setupSearchForms() {
-	setupSearchForm("movieSearchForm", "movie-item", "movie-item-name")
-	setupSearchForm("tvShowSearchForm", "tv-show-item", "tv-show-item-name")
-	setupSearchForm(
-		"manhwaAndMangaSearchForm",
-		"manhwa-and-manga-item",
-		"manhwa-and-manga-item-name"
-	)
+function initializeDeleteButtons() {
+  setupDeleteButtonsForType("movies");
+  setupDeleteButtonsForType("manhwa-and-manga");
+  setupDeleteButtonsForType("tv-shows");
 }
 
-function setupDeleteButtons(type) {
-	document
-		.querySelectorAll(`.${type}-action-btn[data-method='DELETE']`)
-		.forEach((btn) => {
-			btn.addEventListener("click", (e) => {
-				e.preventDefault()
-				const id = btn.closest("li[data-id]").getAttribute("data-id")
-				console.log(id)
-				let confirmationMessage =
-					"Are you sure you want to delete this item?"
-				if (type === "movies")
-					confirmationMessage =
-						"Are you sure you want to delete this movie?"
-				else if (type === "tv-shows")
-					confirmationMessage =
-						"Are you sure you want to delete this TV show?"
-				else if (type === "manhwa-and-manga")
-					confirmationMessage =
-						"Are you sure you want to delete this manhwa?"
-				deleteItem(type, id, confirmationMessage)
-			})
-		})
+function initializeForms() {
+  handleFormSubmission("movieForm", "/api/movies", { name: "string" });
+  handleFormSubmission("tvShowForm", "/api/tv-shows", {
+    name: "string",
+    status: "string",
+    season: "number",
+    episode: "number",
+  });
+  handleFormSubmission("manhwaAndMangaForm", "/api/manhwa-and-manga", {
+    name: "string",
+    status: "string",
+    chapter: "number",
+  });
 }
 
-function setupEditAndCancelButtons(type) {
-	document
-		.querySelectorAll(`.${type}-action-btn[data-method='PUT']`)
-		.forEach((btn) => {
-			btn.addEventListener("click", () => {
-				const li = btn.closest(`li[data-id]`)
-				const id = li.getAttribute("data-id")
-				const editForm = document.querySelector(
-					`.edit-${type}-form[data-id="${id}"]`
-				)
-				if (editForm) editForm.style.display = "flex"
-				const btnDiv = li.querySelector("div")
-				if (btnDiv) btnDiv.style.display = "none"
-			})
-		})
-
-	document.querySelectorAll(`.cancel-edit-${type}-btn`).forEach((btn) => {
-		btn.addEventListener("click", () => {
-			const editForm = btn.closest(`.edit-${type}-form`)
-			if (!editForm) return
-			const id = editForm.getAttribute("data-id")
-			const li = document.querySelector(`li[data-id="${id}"]`)
-			if (editForm) editForm.style.display = "none"
-			const btnDiv = li.querySelector("div")
-			if (btnDiv) btnDiv.style.display = "flex"
-		})
-	})
+function initializeSearchForms() {
+  setupSearchFormForType("movieSearchForm", "movie-item", "movie-item-name");
+  setupSearchFormForType(
+    "tvShowSearchForm",
+    "tv-show-item",
+    "tv-show-item-name",
+  );
+  setupSearchFormForType(
+    "manhwaAndMangaSearchForm",
+    "manhwa-and-manga-item",
+    "manhwa-and-manga-item-name",
+  );
 }
 
-function handleFormSubmit(formId, apiPath, fields, method = "POST") {
-	const form = document.getElementById(formId)
-	if (!form) return
+function setupDeleteButtonsForType(type) {
+  document
+    .querySelectorAll(`.${type}-action-btn[data-method='DELETE']`)
+    .forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.closest("li[data-id]").getAttribute("data-id");
+        let confirmationMessage = "Are you sure you want to delete this item?";
+        if (type === "movies")
+          confirmationMessage = "Are you sure you want to delete this movie?";
+        else if (type === "tv-shows")
+          confirmationMessage = "Are you sure you want to delete this TV show?";
+        else if (type === "manhwa-and-manga")
+          confirmationMessage = "Are you sure you want to delete this manhwa?";
+        deleteItem(type, id, confirmationMessage);
+      });
+    });
+}
 
-	form.addEventListener("submit", async (e) => {
-		e.preventDefault()
-		const body = {}
+function setupEditAndCancelButtonsForType(type) {
+  document
+    .querySelectorAll(`.${type}-action-btn[data-method='PUT']`)
+    .forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const li = btn.closest(`li[data-id]`);
+        const editForm = li.querySelector(`.edit-${type}-form`);
+        if (editForm) editForm.classList.remove("hidden");
+        const btnDiv = li.querySelector("div");
+        if (btnDiv) btnDiv.style.display = "none";
+      });
+    });
 
-		for (const [field, type] of Object.entries(fields)) {
-			let value = form[field]?.value
-			if (value === undefined) continue
+  document.querySelectorAll(`.${type}-cancel-edit-btn`).forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const editForm = btn.closest(`.edit-${type}-form`);
+      if (!editForm) return;
+      editForm.classList.add("hidden");
+      const li = editForm.closest("li[data-id]");
+      const btnDiv = li.querySelector("div");
+      if (btnDiv) btnDiv.style.display = "flex";
+    });
+  });
+}
 
-			if (type === "number") {
-				value = Number(value)
-			}
+function handleFormSubmission(formOrId, apiPath, fields, method = "POST") {
+  const form =
+    typeof formOrId === "string" ? document.getElementById(formOrId) : formOrId;
+  if (!form) return;
 
-			body[field] = value
-		}
-		try {
-			const response = await fetch(apiPath, {
-				method,
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(body),
-			})
-			if (!response.ok) throw new Error("Request failed")
-			form.reset()
-			location.reload()
-		} catch (error) {
-			console.error(error)
-		}
-	})
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const body = {};
+
+    for (const [field, type] of Object.entries(fields)) {
+      let value = form[field]?.value;
+      if (value === undefined) continue;
+
+      if (type === "number") {
+        value = Number(value);
+      }
+
+      body[field] = value;
+    }
+    console.log(body); // Log the body before submitting
+    let url = apiPath;
+    if (method === "PUT" && form.id && form.id.value) {
+      url += `/${form.id.value}`;
+    }
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!response.ok) throw new Error("Request failed");
+      form.reset();
+      location.reload();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+}
+
+function initializeAllEditForms() {
+  document.querySelectorAll(".edit-movies-form").forEach((form) => {
+    handleFormSubmission(form, "/api/movies", { name: "string" }, "PUT");
+  });
+  document.querySelectorAll(".edit-tv-shows-form").forEach((form) => {
+    handleFormSubmission(
+      form,
+      "/api/tv-shows",
+      {
+        name: "string",
+        status: "string",
+        season: "number",
+        episode: "number",
+      },
+      "PUT",
+    );
+  });
+  document.querySelectorAll(".edit-manhwa-and-manga-form").forEach((form) => {
+    handleFormSubmission(
+      form,
+      "/api/manhwa-and-manga",
+      {
+        name: "string",
+        status: "string",
+        chapter: "number",
+      },
+      "PUT",
+    );
+  });
 }
 
 function deleteItem(type, id, confirmationMessage) {
-	if (confirm(confirmationMessage)) {
-		fetch(`api/${type}/${id}`, {
-			method: "DELETE",
-		})
-			.then(() => location.reload())
-			.catch((error) => console.error(error))
-	}
+  if (confirm(confirmationMessage)) {
+    fetch(`api/${type}/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => location.reload())
+      .catch((error) => console.error(error));
+  }
 }
 
-function handleEditMovieForms() {
-	document.querySelectorAll(".edit-movie-form").forEach((form) => {
-		form.addEventListener("submit", async (e) => {
-			e.preventDefault()
-
-			const id = form.id.value
-			const name = form.name.value
-			const date = form.date.value
-
-			try {
-				const response = await fetch(`/api/movies/${id}`, {
-					method: "PUT",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ name, date }),
-				})
-				if (!response.ok) throw new Error("Request failed")
-				location.reload()
-			} catch (error) {
-				console.error(error)
-			}
-		})
-	})
+function initializeStatusFilter() {
+  document.querySelectorAll(".filter-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const status = this.getAttribute("data-status");
+      document.querySelectorAll("ul li[data-status]").forEach((li) => {
+        if (status === "All" || li.getAttribute("data-status") === status) {
+          li.style.display = "";
+        } else {
+          li.style.display = "none";
+        }
+      });
+    });
+  });
 }
-function setupFilterByStatus() {
-	document.querySelectorAll(".filter-btn").forEach((btn) => {
-		btn.addEventListener("click", function () {
-			const status = this.getAttribute("data-status")
-			document.querySelectorAll("ul li[data-status]").forEach((li) => {
-				if (
-					status === "All" ||
-					li.getAttribute("data-status") === status
-				) {
-					li.style.display = ""
-				} else {
-					li.style.display = "none"
-				}
-			})
-		})
-	})
+function setupSearchFormForType(formId, itemClass, itemNameClass) {
+  const form = document.getElementById(formId);
+  if (form) {
+    const itemsWhole = document.querySelectorAll(`.${itemClass}`);
+    const searchInput = form.querySelector('input[name="name"]');
+    searchInput.addEventListener("input", function () {
+      const searchVal = searchInput.value.trim().toLowerCase();
+
+      itemsWhole.forEach((item) => {
+        const itemName = item.querySelector(`.${itemNameClass}`);
+        const itemNameText = itemName ? itemName.textContent.toLowerCase() : "";
+
+        if (itemNameText.includes(searchVal)) {
+          item.style.display = "";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  }
 }
-function setupSearchForm(formId, itemClass, itemNameClass) {
-	const form = document.getElementById(formId)
-	if (form) {
-		const itemsWhole = document.querySelectorAll(`.${itemClass}`)
-		const searchInput = form.querySelector('input[name="name"]')
-		searchInput.addEventListener("input", function () {
-			const searchVal = searchInput.value.trim().toLowerCase()
 
-			itemsWhole.forEach((item) => {
-				const itemName = item.querySelector(`.${itemNameClass}`)
-				const itemNameText = itemName
-					? itemName.textContent.toLowerCase()
-					: ""
+function initializeIncrementDecrementButtons(
+  incrementBtnClass,
+  decrementBtnClass,
+  incrementAndDecrementFormClass,
+  type,
+  inputName,
+) {
+  document
+    .querySelectorAll(`.${incrementBtnClass}, .${decrementBtnClass}`)
+    .forEach((btn) => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const li = btn.closest("li[data-id]");
+        const form = li.querySelector(`.${incrementAndDecrementFormClass}`);
+        const input = form.querySelector(`input[name="${inputName}"]`);
+        let currentValue = Number(input.value);
 
-				if (itemNameText.includes(searchVal)) {
-					item.style.display = ""
-				} else {
-					item.style.display = "none"
-				}
-			})
-		})
-	}
+        if (btn.classList.contains(incrementBtnClass)) {
+          currentValue += 1;
+        } else {
+          currentValue = Math.max(1, currentValue - 1);
+        }
+        input.value = currentValue;
+
+        const body = {};
+        new FormData(form).forEach((value, key) => {
+          body[key] = isNaN(value) ? value : Number(value);
+        });
+        body[inputName] = currentValue;
+
+        const id = form.querySelector('input[name="id"]').value;
+        try {
+          const response = await fetch(`/api/${type}/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          if (!response.ok) throw new Error("Request failed");
+          location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    });
 }

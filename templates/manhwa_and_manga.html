@@ -2,189 +2,148 @@
 <h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">
 	Manhwa un Manga
 </h2>
-<form
-  id="manhwaAndMangaForm"
-  class="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3 mb-8 max-w-4xl mx-auto px-4 sm:px-0"
->
-  <input
-    type="text"
-    id="manhwaAndMangaName"
-    name="name"
-    placeholder="Name"
-    required
-    class="w-full sm:flex-1 min-w-[200px] px-4 py-3  border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
-  />
-  <input
-    type="number"
-    id="manhwaAndMangaChapter"
-    name="chapter"
-    placeholder="Chapter"
-    min="1"
-    required
-    class="w-full sm:w-28 min-w-[70px] px-4 py-3  border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
-  />
-  <select
-    id="manhwaAndMangaStatus"
-    name="status"
-    required
-    class="w-full sm:w-auto min-w-[70px] px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition appearance-none"
-  >
-    <option value="Reading">Reading</option>
-    <option value="Completed">Completed</option>
-    <option value="Dropped">Dropped</option>
-  </select>
-  <button
-    type="submit"
-    class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition"
-  >
-    Add Manhwa/Manga
-  </button>
+<form id="manhwaAndMangaForm"
+	class="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3 mb-8 max-w-4xl mx-auto px-4 sm:px-0">
+	<input type="text" id="manhwaAndMangaName" name="name" placeholder="Name" required
+		class="w-full sm:flex-1 min-w-[200px] px-4 py-3  border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition" />
+	<input type="number" id="manhwaAndMangaChapter" name="chapter" placeholder="Chapter" min="1" required
+		class="w-full sm:w-28 min-w-[70px] px-4 py-3  border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition" />
+	<select id="manhwaAndMangaStatus" name="status" required
+		class="w-full sm:w-auto min-w-[70px] px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition appearance-none">
+		<option value="Reading">Reading</option>
+		<option value="Completed">Completed</option>
+		<option value="Dropped">Dropped</option>
+	</select>
+	<button type="submit"
+		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition">
+		Add Manhwa/Manga
+	</button>
 </form>
 
-<form
-	id="manhwaAndMangaSearchForm"
-	class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto"
->
+<form id="manhwaAndMangaSearchForm" class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto">
 	<h3 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">
 		Search for Manhwa/Manga
 	</h3>
-	<input
-		type="text"
-		id="name"
-		name="name"
-		placeholder="Search Manhwa/Manga"
-		required
-		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
-	/>
+	<input type="text" id="name" name="name" placeholder="Search Manhwa/Manga" required
+		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition" />
 </form>
 
-<div class="mb-4 flex gap-2">
-	<button
-		type="button"
+<div class="mb-4 flex flex-row gap-2 items-center justify-center md:justify-start">
+	<button type="button"
 		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 bg-teal-700 bg-opacity-90 -md px-4 py-2 shadow-lg"
-		data-status="All"
-	>
+		data-status="All">
 		All
 	</button>
-	<button
-		type="button"
+	<button type="button"
 		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 bg-teal-700 bg-opacity-90 -md px-4 py-2 shadow-lg"
-		data-status="Reading"
-	>
+		data-status="Reading">
 		Reading
 	</button>
-	<button
-		type="button"
+	<button type="button"
 		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 bg-teal-700 bg-opacity-90 -md px-4 py-2 shadow-lg"
-		data-status="Completed"
-	>
+		data-status="Completed">
 		Completed
 	</button>
-	<button
-		type="button"
+	<button type="button"
 		class="filter-btn text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 bg-teal-700 bg-opacity-90 -md px-4 py-2 shadow-lg"
-		data-status="Dropped"
-	>
+		data-status="Dropped">
 		Dropped
 	</button>
 </div>
 
 <ul class="space-y-2">
 	{{range .ManhwaAndManga}}
-	<li
-	  class="manhwa-and-manga-item flex flex-col bg-white/90  px-4 py-2 shadow w-full"
-	  data-status="{{.Status}}"
-	  data-id="{{.ID}}"
-	>
-	  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-		<div class="flex flex-col">
-		  <span class="manhwa-and-manga-item-name font-semibold text-gray-800 text-base sm:text-lg">{{.Name}}</span>
-		  <span class="text-sm text-gray-500 mt-0.5">{{.Date}}</span>
+	<li class="manhwa-and-manga-item flex flex-col bg-slate-200 px-4 py-2 shadow w-full gap-2" data-status="{{.Status}}"
+		data-id="{{.ID}}">
+
+		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+			<div>
+				<span class="manhwa-and-manga-item-name font-semibold text-gray-800 text-lg">{{.Name}}</span>
+				<span class="block text-sm text-gray-500 mt-1">{{.Date}}</span>
+			</div>
+			<div class="text-sm text-gray-600 mt-1 sm:mt-0">
+				Chapter {{.Chapter}}
+			</div>
 		</div>
-  
-		<div>
-		  <span class="text-sm text-gray-500">Chapter {{.Chapter}}</span>
+
+		<div class="flex flex-wrap items-center justify-start sm:justify-between gap-2">
+
+			<span class="text-sm font-semibold px-4 py-2 border rounded
+			{{if eq .Status " Reading"}} text-yellow-600 border-yellow-600 {{else if eq .Status "Completed" }} text-teal-600
+				border-teal-600 {{else if eq .Status "Dropped" }} text-red-600 border-red-600 {{else}} text-gray-600
+				border-gray-600 {{end}}">
+				{{.Status}}
+			</span>
+
+			<div class="flex gap-2 flex-wrap">
+				<button
+					class="manhwa-and-manga-increment-btn bg-teal-800 text-white font-bold px-3 py-2 rounded hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-600 transition-colors duration-300 ease-in-out">
+					&uarr;
+				</button>
+				<button
+					class="manhwa-and-manga-decrement-btn bg-teal-800 text-white font-bold px-3 py-2 rounded hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-teal-600 transition-colors duration-300 ease-in-out">
+					&darr;
+				</button>
+
+				<button
+					class="manhwa-and-manga-action-btn bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+					type="button" data-method="PUT">
+					Edit
+				</button>
+				<button
+					class="manhwa-and-manga-action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+					type="button" data-method="DELETE">
+					Delete
+				</button>
+			</div>
 		</div>
-  
-		<div class="flex flex-wrap items-center gap-2">
-		  <span
-			class="text-sm font-semibold px-4 py-2  border
-			  {{if eq .Status "Reading"}} text-yellow-600 border-yellow-600
-			  {{else if eq .Status "Completed"}} text-teal-600 border-teal-600
-			  {{else if eq .Status "Dropped"}} text-red-600 border-red-600
-			  {{else}} text-gray-600 border-gray-600
-			  {{end}}"
-		  >
-			{{.Status}}
-		  </span>
-  
-		  <button
-			class="manhwa-and-manga-action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
-			type="button"
-			data-method="DELETE"
-		  >
-			Delete
-		  </button>
-		  <button
-			class="manhwa-and-manga-action-btn bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
-			type="button"
-			data-method="PUT"
-		  >
-			Edit
-		  </button>
-		</div>
-	  </div>
-  
-	  <form
-		class="edit-manhwa-and-manga-form flex flex-col sm:flex-row flex-wrap gap-2 mt-2 hidden w-full"
-		data-id="{{.ID}}"
-	  >
-		<input type="hidden" name="id" value="{{.ID}}" />
-		<input type="hidden" name="date" value="{{.Date}}" />
-		<input
-		  type="text"
-		  name="name"
-		  value="{{.Name}}"
-		  required
-		  class="w-full sm:flex-1 px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
-		/>
-		<input
-		  type="number"
-		  name="chapter"
-		  value="{{.Chapter}}"
-		  min="1"
-		  required
-		  class="w-full sm:w-24 px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
-		/>
-		<select
-		  name="status"
-		  required
-		  class="w-full sm:w-auto px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
-		>
-		  <option value="Reading" {{if eq .Status "Reading"}}selected{{end}}>Reading</option>
-		  <option value="Completed" {{if eq .Status "Completed"}}selected{{end}}>Completed</option>
-		  <option value="Dropped" {{if eq .Status "Dropped"}}selected{{end}}>Dropped</option>
-		</select>
-  
-		<div class="flex gap-2 w-full sm:w-auto">
-		  <button
-			type="submit"
-			class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1  font-semibold text-sm transition w-full sm:w-auto"
-		  >
-			Save
-		  </button>
-		  <button
-			type="button"
-			class="cancel-edit-manhwa-and-manga-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1  font-semibold text-sm transition w-full sm:w-auto"
-		  >
-			Cancel
-		  </button>
-		</div>
-	  </form>
+
+		<form class="manhwa-and-manga-increment-and-decrement-form " data-id="{{.ID}}">
+			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="date" value="{{.Date}}" />
+			<input type="hidden" name="name" value="{{.Name}}" />
+			<input type="hidden" name="chapter" value="{{.Chapter}}" />
+			<div hidden>
+				<select name="status">
+					<option value="Reading" {{if eq .Status "Reading" }}selected{{end}}>Reading</option>
+					<option value="Completed" {{if eq .Status "Completed" }}selected{{end}}>Completed</option>
+					<option value="Dropped" {{if eq .Status "Dropped" }}selected{{end}}>Dropped</option>
+				</select>
+			</div>
+
+		</form>
+
+		<form
+			class="edit-manhwa-and-manga-form flex flex-col sm:flex-row flex-wrap gap-2 mt-2 hidden w-full text-slate-600"
+			data-id="{{.ID}}">
+			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="date" value="{{.Date}}" />
+			<input type="text" name="name" value="{{.Name}}" required
+				class="w-full sm:flex-1 px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm" />
+			<input type="number" name="chapter" value="{{.Chapter}}" min="1" required
+				class="w-full sm:w-24 px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm" />
+			<select name="status" required
+				class="w-full sm:w-auto px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm">
+				<option value="Reading" {{if eq .Status "Reading" }}selected{{end}}>Reading</option>
+				<option value="Completed" {{if eq .Status "Completed" }}selected{{end}}>Completed</option>
+				<option value="Dropped" {{if eq .Status "Dropped" }}selected{{end}}>Dropped</option>
+			</select>
+
+			<div class="flex gap-2 w-full sm:w-auto">
+				<button type="submit"
+					class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition">
+					Save
+				</button>
+				<button type="button"
+					class="manhwa-and-manga-cancel-edit-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md font-semibold text-sm transition w-full sm:w-auto">
+					Cancel
+				</button>
+			</div>
+		</form>
 	</li>
 	{{else}}
 	<li class="text-gray-300 italic text-center">No manhwa or manga</li>
 	{{end}}
-  </ul>
-  
+</ul>
+
 {{end}}
