@@ -8,7 +8,7 @@
 		"start-dev": "go run cmd/media_tracker/main.go --mode=debug",
 		"build-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css",
 		"watch-css": "npx tailwindcss -i ./public/tailwind.css -o ./public/dist/output.css --watch",
-		"build-go": "mkdir -p bin && go build -o bin/media_tracker ./cmd/media_tracker",
+		"build-go": "mkdir -p bin && CGO_ENABLED=1 go build -o bin/media_tracker ./cmd/media_tracker",
 		"build-all": "npm install && npm run build-css && npm run build-go"
 	},
 	"devDependencies": {
