@@ -2,20 +2,25 @@ package models
 
 import (
 	"database/sql"
+	"time"
 )
 
 type ManhwaAndManga struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Status  string `json:"status"`
-	Date    string `json:"date"`
-	Chapter int    `json:"chapter"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	Status    string    `json:"status"`
+	Date      string    `json:"date"`
+	Chapter   int       `json:"chapter"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	UserID    string    `json:"user_id"`
 }
 
 type ManhwaAndMangaInput struct {
 	Name    string `json:"name"`
 	Status  string `json:"status"`
 	Chapter int    `json:"chapter"`
+	UserID  string `json:"user_id"`
 }
 
 func CreateManhwaAndMangaTable(db *sql.DB) error {
@@ -25,15 +30,18 @@ func CreateManhwaAndMangaTable(db *sql.DB) error {
 		name TEXT NOT NULL,
 		status TEXT,
 		date TEXT,
-		chapter INTEGER
+		chapter INTEGER,
+		user_id TEXT,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err := db.Exec(query)
 	return err
 }
 
 func InsertManhwaAndManga(db *sql.DB, m *ManhwaAndManga) error {
-	query := `INSERT INTO manhwa_and_manga (name, status, date, chapter) VALUES (?, ?, ?, ?)`
-	result, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter)
+	query := `INSERT INTO manhwa_and_manga (name, status, date, chapter, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	result, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter, m.UserID, m.CreatedAt, m.UpdatedAt)
 	if err != nil {
 		return err
 	}
@@ -45,7 +53,7 @@ func InsertManhwaAndManga(db *sql.DB, m *ManhwaAndManga) error {
 }
 
 func GetAllManhwaAndManga(db *sql.DB) ([]ManhwaAndManga, error) {
-	rows, err := db.Query(`SELECT id, name, status, date, chapter FROM manhwa_and_manga`)
+	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga`)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +62,7 @@ func GetAllManhwaAndManga(db *sql.DB) ([]ManhwaAndManga, error) {
 	var list []ManhwaAndManga
 	for rows.Next() {
 		var m ManhwaAndManga
-		if err := rows.Scan(&m.ID, &m.Name, &m.Status, &m.Date, &m.Chapter); err != nil {
+		if err := rows.Scan(&m.ID, &m.Name, &m.Status, &m.Date, &m.Chapter, &m.UserID, &m.CreatedAt, &m.UpdatedAt); err != nil {
 			return nil, err
 		}
 		list = append(list, m)
@@ -63,8 +71,8 @@ func GetAllManhwaAndManga(db *sql.DB) ([]ManhwaAndManga, error) {
 }
 
 func UpdateManhwaAndManga(db *sql.DB, m ManhwaAndManga) error {
-	query := `UPDATE manhwa_and_manga SET name = ?, status = ?, date = ?, chapter = ? WHERE id = ?`
-	_, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter, m.ID)
+	query := `UPDATE manhwa_and_manga SET name = ?, status = ?, date = ?, chapter = ?, user_id = ?, updated_at = ? WHERE id = ?`
+	_, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter, m.UserID, m.UpdatedAt, m.ID)
 	return err
 }
 

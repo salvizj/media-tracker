@@ -1,0 +1,15 @@
+{{define "content_login"}}
+
+<div class="flex items-center justify-center md:p-20 p-6">
+	<form class="login-form flex flex-col gap-4" method="post">
+		<input type="email" name="email" placeholder="Email" required />
+		<input
+			type="password"
+			name="password"
+			placeholder="Password"
+			required
+		/>
+		<button type="submit">Login</button>
+	</form>
+</div>
+{{end}}

@@ -8,4 +8,5 @@ type LayoutTmplData struct {
 	Movies          []models.Movie
 	TVShows         []models.TVShow
 	ManhwaAndManga  []models.ManhwaAndManga
+	IsLoggedIn      bool
 }

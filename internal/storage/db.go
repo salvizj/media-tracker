@@ -36,6 +36,12 @@ func createTables(db *sql.DB) error {
 	if err := models.CreateManhwaAndMangaTable(db); err != nil {
 		return err
 	}
+	if err := models.CreateUserTable(db); err != nil {
+		return err
+	}
+	if err := models.CreateSessionTable(db); err != nil {
+		return err
+	}
 	return nil
 }
 

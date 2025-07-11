@@ -41,8 +41,10 @@ func CreateMovie(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		movie := models.Movie{
-			Name: m.Name,
-			Date: time.Now().Format("2006-01-02"),
+			Name:      m.Name,
+			Date:      time.Now().Format("2006-01-02"),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		}
 
 		if err := models.InsertMovie(db, &movie); err != nil {
@@ -60,7 +62,7 @@ func UpdateMovie(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
-
+		m.UpdatedAt = time.Now()
 		idParam := c.Param("id")
 		id, err := strconv.Atoi(idParam)
 		if err != nil {

@@ -38,11 +38,13 @@ func CreateTVShow(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		tvShow := models.TVShow{
-			Name:    input.Name,
-			Status:  input.Status,
-			Season:  input.Season,
-			Episode: input.Episode,
-			Date:    time.Now().Format("2006-01-02"),
+			Name:      input.Name,
+			Status:    input.Status,
+			Season:    input.Season,
+			Episode:   input.Episode,
+			Date:      time.Now().Format("2006-01-02"),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		}
 		if err := models.InsertTVShow(db, &tvShow); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create record"})
@@ -59,7 +61,7 @@ func UpdateTVShow(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
-
+		tvShow.UpdatedAt = time.Now()
 		idParam := c.Param("id")
 		id, err := strconv.Atoi(idParam)
 		if err != nil {

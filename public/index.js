@@ -37,6 +37,8 @@ function initializeForms() {
 	handleFormSubmission("movieForm", "/api/movies")
 	handleFormSubmission("tvShowForm", "/api/tv-shows")
 	handleFormSubmission("manhwaAndMangaForm", "/api/manhwa-and-manga")
+	handleFormSubmission("loginForm", "/api/login")
+	handleFormSubmission("registerForm", "/api/register")
 }
 
 function initializeSearchForms() {

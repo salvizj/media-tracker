@@ -2,16 +2,21 @@ package models
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Movie struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Date string `json:"date"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	Date      string    `json:"date"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	UserID    string    `json:"user_id"`
 }
 
 type MovieInput struct {
-	Name string `json:"name"`
+	Name   string `json:"name"`
+	UserID string `json:"user_id"`
 }
 
 func CreateMoviesTable(db *sql.DB) error {
@@ -19,15 +24,18 @@ func CreateMoviesTable(db *sql.DB) error {
 	CREATE TABLE IF NOT EXISTS movies (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
-		date TEXT
+		date TEXT,
+		user_id TEXT,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err := db.Exec(query)
 	return err
 }
 
 func InsertMovie(db *sql.DB, m *Movie) error {
-	query := `INSERT INTO movies (name, date) VALUES (?, ?)`
-	result, err := db.Exec(query, m.Name, m.Date)
+	query := `INSERT INTO movies (name, date, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
+	result, err := db.Exec(query, m.Name, m.Date, m.UserID, m.CreatedAt, m.UpdatedAt)
 	if err != nil {
 		return err
 	}
@@ -39,7 +47,7 @@ func InsertMovie(db *sql.DB, m *Movie) error {
 }
 
 func GetAllMovies(db *sql.DB) ([]Movie, error) {
-	rows, err := db.Query(`SELECT id, name, date FROM movies`)
+	rows, err := db.Query(`SELECT id, name, date, user_id, created_at, updated_at FROM movies`)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +56,7 @@ func GetAllMovies(db *sql.DB) ([]Movie, error) {
 	var movies []Movie
 	for rows.Next() {
 		var m Movie
-		if err := rows.Scan(&m.ID, &m.Name, &m.Date); err != nil {
+		if err := rows.Scan(&m.ID, &m.Name, &m.Date, &m.UserID, &m.CreatedAt, &m.UpdatedAt); err != nil {
 			return nil, err
 		}
 		movies = append(movies, m)
@@ -57,8 +65,8 @@ func GetAllMovies(db *sql.DB) ([]Movie, error) {
 }
 
 func UpdateMovie(db *sql.DB, m Movie) error {
-	query := `UPDATE movies SET name = ?, date = ? WHERE id = ?`
-	_, err := db.Exec(query, m.Name, m.Date, m.ID)
+	query := `UPDATE movies SET name = ?, date = ?, user_id = ?, updated_at = ? WHERE id = ?`
+	_, err := db.Exec(query, m.Name, m.Date, m.UserID, m.UpdatedAt, m.ID)
 	return err
 }
 

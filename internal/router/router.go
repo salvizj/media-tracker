@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"html/template"
 	"media_tracker/internal/handlers"
+	"media_tracker/internal/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,14 +16,20 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 
 	r.Static("/public", "./public")
 
-	// UI routes
 	r.GET("/", handlers.IndexHandler(db, tmpl))
-	r.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
-	r.GET("/movies", handlers.MoviesHandler(db, tmpl))
-	r.GET("/tv-shows", handlers.TVShowsHandler(db, tmpl))
+	r.GET("/login", handlers.LoginHandler(db, tmpl))
+	r.GET("/register", handlers.RegisterHandler(db, tmpl))
 
-	// CRUD API routes
+	secured := r.Group("/")
+	secured.Use(middleware.AuthRequired(db))
+	{
+		secured.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
+		secured.GET("/movies", handlers.MoviesHandler(db, tmpl))
+		secured.GET("/tv-shows", handlers.TVShowsHandler(db, tmpl))
+	}
+
 	api := r.Group("/api")
+	api.Use(middleware.AuthRequired(db))
 	{
 		api.POST("/movies", handlers.CreateMovie(db))
 		api.PUT("/movies/:id", handlers.UpdateMovie(db))

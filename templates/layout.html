@@ -38,6 +38,26 @@
 			>
 				Movies
 			</a>
+			{{if not .IsLoggedIn}}
+			<a
+				href="/login"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				Login
+			</a>
+			<a
+				href="/register"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				Register
+			</a>
+			{{end}} {{if .IsLoggedIn}}
+			<a
+				href="/logout"
+				class="text-teal-200 hover:text-teal-50 transition font-semibold border-b-4 border-transparent hover:border-teal-200 text-center text-xl"
+			>
+				Logout
+			</a>
 		</nav>
 
 		<main
@@ -48,7 +68,9 @@
 			"content_movies"}} {{template "content_movies" .}} {{else if eq
 			.ContentTemplate "content_tv_shows"}} {{template "content_tv_shows"
 			.}} {{else if eq .ContentTemplate "content_index"}} {{template
-			"content_index" .}} {{end}}
+			"content_index" .}} {{else if eq .ContentTemplate "content_login"}}
+			{{template "content_login" .}} {{else if eq .ContentTemplate
+			"content_register"}} {{template "content_register" .}} {{end}}
 		</main>
 
 		<footer

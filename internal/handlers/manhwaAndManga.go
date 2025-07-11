@@ -38,10 +38,12 @@ func CreateManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		manhwaAndManga := models.ManhwaAndManga{
-			Name:    m.Name,
-			Status:  m.Status,
-			Chapter: m.Chapter,
-			Date:    time.Now().Format("2006-01-02"),
+			Name:      m.Name,
+			Status:    m.Status,
+			Chapter:   m.Chapter,
+			Date:      time.Now().Format("2006-01-02"),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
 		}
 		if err := models.InsertManhwaAndManga(db, &manhwaAndManga); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create entry"})
@@ -66,6 +68,7 @@ func UpdateManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		m.ID = id
+		m.UpdatedAt = time.Now()
 
 		if err := models.UpdateManhwaAndManga(db, m); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update entry"})
