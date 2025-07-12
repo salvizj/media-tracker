@@ -2,15 +2,15 @@ package utils
 
 import (
 	"crypto/rand"
-	"fmt"
+	"encoding/hex"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GenerateID() string {
-	b := make([]byte, 16)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)
+func GenerateUUID() string {
+	bytes := make([]byte, 16)
+	rand.Read(bytes)
+	return hex.EncodeToString(bytes)
 }
 
 func HashPassword(password string) string {

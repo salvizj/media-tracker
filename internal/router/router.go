@@ -18,7 +18,9 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 
 	r.GET("/", handlers.IndexHandler(db, tmpl))
 	r.GET("/login", handlers.LoginHandler(db, tmpl))
+	r.POST("/login", handlers.LoginHandler(db, tmpl))
 	r.GET("/register", handlers.RegisterHandler(db, tmpl))
+	r.POST("/register", handlers.RegisterHandler(db, tmpl))
 
 	secured := r.Group("/")
 	secured.Use(middleware.AuthRequired(db))

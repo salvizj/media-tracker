@@ -17,7 +17,8 @@ func LogoutHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		models.DeleteSession(db, cookie)
+		sessionID := cookie
+		models.DeleteSessionBySessionID(db, sessionID)
 		c.HTML(http.StatusOK, "layout", types.LayoutTmplData{
 			Title:           "Media Tracker",
 			ContentTemplate: "content_logout",

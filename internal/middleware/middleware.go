@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"database/sql"
+	"media_tracker/internal/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,20 +10,17 @@ import (
 
 func AuthRequired(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("session_token")
+		cookie, err := c.Cookie("session_id")
 		if err != nil || cookie == "" {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-
-		var userID int
-		err = db.QueryRow("SELECT user_id FROM sessions WHERE token = ? LIMIT 1", cookie).Scan(&userID)
+		session, err := models.GetSessionBySessionID(db, cookie)
 		if err != nil {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-
-		c.Set("userID", userID)
+		c.Set("userID", session.UserID)
 		c.Next()
 	}
 }

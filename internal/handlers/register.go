@@ -19,6 +19,7 @@ func RegisterHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 			data := types.LayoutTmplData{
 				Title:           "Media Tracker",
 				ContentTemplate: "content_register",
+				IsLoggedIn:      false,
 			}
 			c.HTML(http.StatusOK, "layout", data)
 		}
@@ -34,11 +35,12 @@ func RegisterHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 					Title:           "Media Tracker",
 					ContentTemplate: "content_register",
 					Error:           "Passwords do not match",
+					IsLoggedIn:      false,
 				})
 				return
 			}
 			var userInsert = models.User{
-				ID:        utils.GenerateID(),
+				ID:        utils.GenerateUUID(),
 				Email:     user.Email,
 				Password:  utils.HashPassword(user.Password),
 				CreatedAt: time.Now(),
@@ -51,12 +53,14 @@ func RegisterHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 					Title:           "Media Tracker",
 					ContentTemplate: "content_register",
 					Error:           "Failed to create user",
+					IsLoggedIn:      false,
 				})
 				return
 			}
 			c.HTML(http.StatusOK, "layout", types.LayoutTmplData{
 				Title:           "Media Tracker",
 				ContentTemplate: "content_login",
+				IsLoggedIn:      false,
 			})
 			return
 		}

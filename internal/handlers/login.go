@@ -39,10 +39,11 @@ func LoginHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 			}
 			user.ID = userID
 			session := models.Session{
-				ID:        utils.GenerateID(),
+				ID:        utils.GenerateUUID(),
 				UserID:    user.ID,
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
+				ExpiresAt: time.Now().Add(24 * time.Hour),
 			}
 
 			err = models.InsertSession(db, &session)
@@ -54,8 +55,15 @@ func LoginHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 				})
 				return
 			}
-
-			c.SetCookie("session_id", session.ID, 3600, "/", "", false, true)
+			models.CleanUpExpiredSessions(db)
+			cookie := http.Cookie{
+				Name:     "session_id",
+				Value:    session.ID,
+				Expires:  session.ExpiresAt,
+				HttpOnly: true,
+				Secure:   true,
+			}
+			c.SetCookie(cookie.Name, cookie.Value, 3600, "/", "", false, true)
 
 			c.HTML(http.StatusOK, "layout", types.LayoutTmplData{
 				Title:           "Media Tracker",

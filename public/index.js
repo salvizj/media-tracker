@@ -34,11 +34,11 @@ function initializeDeleteButtons() {
 }
 
 function initializeForms() {
-	handleFormSubmission("movieForm", "/api/movies")
-	handleFormSubmission("tvShowForm", "/api/tv-shows")
-	handleFormSubmission("manhwaAndMangaForm", "/api/manhwa-and-manga")
-	handleFormSubmission("loginForm", "/api/login")
-	handleFormSubmission("registerForm", "/api/register")
+	handleFormSubmission("movieForm", "/api/movies", "POST")
+	handleFormSubmission("tvShowForm", "/api/tv-shows", "POST")
+	handleFormSubmission("manhwaAndMangaForm", "/api/manhwa-and-manga", "POST")
+	handleFormSubmission("loginForm", "/api/login", "POST")
+	handleFormSubmission("registerForm", "/api/register", "POST")
 }
 
 function initializeSearchForms() {
