@@ -27,8 +27,8 @@ func CreateSessionTable(db *sql.DB) error {
 }
 
 func InsertSession(db *sql.DB, session *Session) error {
-	query := `INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)`
-	_, err := db.Exec(query, session.ID, session.UserID, session.ExpiresAt, session.CreatedAt, session.UpdatedAt)
+	query := `INSERT INTO sessions (id, user_id, created_at, updated_at, expires_at) VALUES (?, ?, ?, ?, ?)`
+	_, err := db.Exec(query, session.ID, session.UserID, session.CreatedAt, session.UpdatedAt, session.ExpiresAt)
 	return err
 }
 

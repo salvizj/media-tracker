@@ -16,34 +16,39 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 
 	r.Static("/public", "./public")
 
+	r.Use(middleware.SetAuthData(db))
+
 	r.GET("/", handlers.IndexHandler(db, tmpl))
 	r.GET("/login", handlers.LoginHandler(db, tmpl))
-	r.POST("/login", handlers.LoginHandler(db, tmpl))
+	r.POST("/api/login", handlers.LoginHandler(db, tmpl))
 	r.GET("/register", handlers.RegisterHandler(db, tmpl))
-	r.POST("/register", handlers.RegisterHandler(db, tmpl))
+	r.POST("/api/register", handlers.RegisterHandler(db, tmpl))
+	r.POST("/api/logout", handlers.LogoutHandler(db, tmpl))
 
-	secured := r.Group("/")
-	secured.Use(middleware.AuthRequired(db))
+	securedPages := r.Group("/")
+	securedPages.Use(middleware.AuthRequired(db))
 	{
-		secured.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
-		secured.GET("/movies", handlers.MoviesHandler(db, tmpl))
-		secured.GET("/tv-shows", handlers.TVShowsHandler(db, tmpl))
+		securedPages.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
+		securedPages.GET("/movies", handlers.MoviesHandler(db, tmpl))
+		securedPages.GET("/tv-shows", handlers.TVShowsHandler(db, tmpl))
 	}
 
 	api := r.Group("/api")
-	api.Use(middleware.AuthRequired(db))
+
+	securedApi := api.Group("")
+	securedApi.Use(middleware.AuthRequired(db))
 	{
-		api.POST("/movies", handlers.CreateMovie(db))
-		api.PUT("/movies/:id", handlers.UpdateMovie(db))
-		api.DELETE("/movies/:id", handlers.DeleteMovie(db))
+		securedApi.POST("/movies", handlers.CreateMovie(db))
+		securedApi.PUT("/movies/:id", handlers.UpdateMovie(db))
+		securedApi.DELETE("/movies/:id", handlers.DeleteMovie(db))
 
-		api.POST("/tv-shows", handlers.CreateTVShow(db))
-		api.PUT("/tv-shows/:id", handlers.UpdateTVShow(db))
-		api.DELETE("/tv-shows/:id", handlers.DeleteTVShow(db))
+		securedApi.POST("/tv-shows", handlers.CreateTVShow(db))
+		securedApi.PUT("/tv-shows/:id", handlers.UpdateTVShow(db))
+		securedApi.DELETE("/tv-shows/:id", handlers.DeleteTVShow(db))
 
-		api.POST("/manhwa-and-manga", handlers.CreateManhwaAndManga(db))
-		api.PUT("/manhwa-and-manga/:id", handlers.UpdateManhwaAndManga(db))
-		api.DELETE("/manhwa-and-manga/:id", handlers.DeleteManhwaAndManga(db))
+		securedApi.POST("/manhwa-and-manga", handlers.CreateManhwaAndManga(db))
+		securedApi.PUT("/manhwa-and-manga/:id", handlers.UpdateManhwaAndManga(db))
+		securedApi.DELETE("/manhwa-and-manga/:id", handlers.DeleteManhwaAndManga(db))
 	}
 
 	return r

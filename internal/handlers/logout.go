@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"html/template"
 	"media_tracker/internal/models"
-	"media_tracker/internal/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,17 +11,17 @@ import (
 
 func LogoutHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("session_token")
+		cookie, err := c.Cookie("session_id")
 		if err != nil || cookie == "" {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "No active session"})
 			return
 		}
 		sessionID := cookie
 		models.DeleteSessionBySessionID(db, sessionID)
-		c.HTML(http.StatusOK, "layout", types.LayoutTmplData{
-			Title:           "Media Tracker",
-			ContentTemplate: "content_logout",
-		})
 
+		c.SetCookie("session_id", "", -1, "/", "", false, true)
+		c.SetCookie("user_id", "", -1, "/", "", false, true)
+
+		c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 	}
 }

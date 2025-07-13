@@ -20,11 +20,15 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 			c.String(http.StatusInternalServerError, "Failed to load tv shows")
 			return
 		}
-
+		isLoggedIn, exists := c.Get("isLoggedIn")
+		if !exists {
+			isLoggedIn = false
+		}
 		data := types.LayoutTmplData{
 			Title:           "TV shows",
 			ContentTemplate: "content_tv_shows",
 			TVShows:         tvShows,
+			IsLoggedIn:      isLoggedIn.(bool),
 		}
 		c.HTML(http.StatusOK, "layout", data)
 	}

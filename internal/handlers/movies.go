@@ -24,10 +24,16 @@ func MoviesHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 			return
 		}
 
+		isLoggedIn, exists := c.Get("isLoggedIn")
+		if !exists {
+			isLoggedIn = false
+		}
+
 		data := types.LayoutTmplData{
-			Title:           "Filmas",
+			Title:           "Films",
 			ContentTemplate: "content_movies",
 			Movies:          movies,
+			IsLoggedIn:      isLoggedIn.(bool),
 		}
 		c.HTML(http.StatusOK, "layout", data)
 	}

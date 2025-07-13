@@ -21,6 +21,29 @@ func AuthRequired(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.Set("userID", session.UserID)
+		c.Set("isLoggedIn", true)
+		c.Next()
+	}
+}
+
+func SetAuthData(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cookie, err := c.Cookie("session_id")
+		if err != nil || cookie == "" {
+			c.Set("isLoggedIn", false)
+			c.Next()
+			return
+		}
+
+		session, err := models.GetSessionBySessionID(db, cookie)
+		if err != nil {
+			c.Set("isLoggedIn", false)
+			c.Next()
+			return
+		}
+
+		c.Set("userID", session.UserID)
+		c.Set("isLoggedIn", true)
 		c.Next()
 	}
 }

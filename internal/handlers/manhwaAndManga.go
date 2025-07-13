@@ -21,10 +21,16 @@ func ManhwaAndMangaHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc 
 			return
 		}
 
+		isLoggedIn, exists := c.Get("isLoggedIn")
+		if !exists {
+			isLoggedIn = false
+		}
+
 		data := types.LayoutTmplData{
 			Title:           "Manhwa un Manga",
 			ContentTemplate: "content_manhwa_and_manga",
 			ManhwaAndManga:  entries,
+			IsLoggedIn:      isLoggedIn.(bool),
 		}
 		c.HTML(http.StatusOK, "layout", data)
 	}

@@ -126,13 +126,93 @@ function handleFormSubmission(formOrId, apiPath, method = "POST") {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(body),
 			})
-			if (!response.ok) throw new Error("Request failed")
-			form.reset()
-			location.reload()
+
+			if (!response.ok) {
+				const errorData = await response.json()
+				throw new Error(errorData.error || "Request failed")
+			}
+
+			const data = await response.json()
+
+			if (form.id === "loginForm" || form.id === "registerForm") {
+				showMessage(data.message || "Success!", "success")
+				setTimeout(() => {
+					window.location.href = "/"
+				}, 1000)
+			} else {
+				form.reset()
+				location.reload()
+			}
 		} catch (error) {
-			console.error(error)
+			showMessage(error.message, "error")
 		}
 	})
+}
+
+function showMessage(message, type = "info") {
+	const messageBox = document.getElementById("message-box")
+	if (!messageBox) return
+
+	messageBox.textContent = message
+
+	messageBox.classList.remove(
+		"bg-green-500",
+		"bg-red-500",
+		"bg-blue-500",
+		"text-white"
+	)
+
+	if (type === "success") {
+		messageBox.classList.add("bg-green-500", "text-white")
+	} else if (type === "error") {
+		messageBox.classList.add("bg-red-500", "text-white")
+	} else {
+		messageBox.classList.add("bg-blue-500", "text-white")
+	}
+
+	messageBox.classList.remove("hidden")
+
+	setTimeout(() => {
+		messageBox.classList.add("hidden")
+	}, 3000)
+}
+
+function getCurrentUserID() {
+	return getCookie("user_id")
+}
+
+function logout() {
+	document.getElementById("logout-btn").addEventListener("click", () => {
+		fetch("/api/logout", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+		})
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Logout failed")
+				}
+				return response.json()
+			})
+			.then((data) => {
+				showMessage(
+					data.message || "Logged out successfully",
+					"success"
+				)
+				setTimeout(() => {
+					window.location.href = "/login"
+				}, 1000)
+			})
+			.catch((error) => {
+				showMessage("Logout failed", "error")
+			})
+	})
+}
+
+function getCookie(name) {
+	const value = `; ${document.cookie}`
+	const parts = value.split(`; ${name}=`)
+	if (parts.length === 2) return parts.pop().split(";").shift()
+	return null
 }
 
 function initializeAllEditForms() {
