@@ -72,6 +72,23 @@ func GetAllTVShows(db *sql.DB) ([]TVShow, error) {
 	}
 	return shows, nil
 }
+func GetAllTVShowsWithUserID(db *sql.DB, userID string) ([]TVShow, error) {
+	rows, err := db.Query(`SELECT id, name, status, date, season, episode, user_id, created_at, updated_at FROM tv_shows WHERE user_id = ?`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var shows []TVShow
+	for rows.Next() {
+		var s TVShow
+		if err := rows.Scan(&s.ID, &s.Name, &s.Status, &s.Date, &s.Season, &s.Episode, &s.UserID, &s.CreatedAt, &s.UpdatedAt); err != nil {
+			return nil, err
+		}
+		shows = append(shows, s)
+	}
+	return shows, nil
+}
 
 func UpdateTVShow(db *sql.DB, s TVShow) error {
 	query := `UPDATE tv_shows SET name = ?, status = ?, date = ?, season = ?, episode = ?, user_id = ?, updated_at = ? WHERE id = ?`

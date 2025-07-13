@@ -64,6 +64,24 @@ func GetAllMovies(db *sql.DB) ([]Movie, error) {
 	return movies, nil
 }
 
+func GetAllMoviesWithUserID(db *sql.DB, userID string) ([]Movie, error) {
+	rows, err := db.Query(`SELECT id, name, date, user_id, created_at, updated_at FROM movies WHERE user_id = ?`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var movies []Movie
+	for rows.Next() {
+		var m Movie
+		if err := rows.Scan(&m.ID, &m.Name, &m.Date, &m.UserID, &m.CreatedAt, &m.UpdatedAt); err != nil {
+			return nil, err
+		}
+		movies = append(movies, m)
+	}
+	return movies, nil
+}
+
 func UpdateMovie(db *sql.DB, m Movie) error {
 	query := `UPDATE movies SET name = ?, date = ?, user_id = ?, updated_at = ? WHERE id = ?`
 	_, err := db.Exec(query, m.Name, m.Date, m.UserID, m.UpdatedAt, m.ID)

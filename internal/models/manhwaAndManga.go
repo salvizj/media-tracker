@@ -52,8 +52,26 @@ func InsertManhwaAndManga(db *sql.DB, m *ManhwaAndManga) error {
 	return err
 }
 
-func GetAllManhwaAndManga(db *sql.DB) ([]ManhwaAndManga, error) {
+func GetAllManhwasAndMangas(db *sql.DB) ([]ManhwaAndManga, error) {
 	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []ManhwaAndManga
+	for rows.Next() {
+		var m ManhwaAndManga
+		if err := rows.Scan(&m.ID, &m.Name, &m.Status, &m.Date, &m.Chapter, &m.UserID, &m.CreatedAt, &m.UpdatedAt); err != nil {
+			return nil, err
+		}
+		list = append(list, m)
+	}
+	return list, nil
+}
+
+func GetAllManhwasAndMangasWithUserID(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
+	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga WHERE user_id = ?`, userID)
 	if err != nil {
 		return nil, err
 	}

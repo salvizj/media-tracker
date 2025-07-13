@@ -19,6 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		"manhwa-and-manga",
 		"chapter"
 	)
+	initializeDownloadButtons("download-movies-btn", "movies")
+	initializeDownloadButtons("download-tv-shows-btn", "tv-shows")
+	initializeDownloadButtons(
+		"download-manhwas-and-mangas-btn",
+		"manhwas-and-mangas"
+	)
 })
 
 function initializeEditAndCancelButtons() {
@@ -179,6 +185,33 @@ function showMessage(message, type = "info") {
 
 function getCurrentUserID() {
 	return getCookie("user_id")
+}
+
+function downloadFile(url) {
+	fetch(url, {
+		method: "GET",
+	})
+		.then((response) => response.blob())
+		.then((blob) => {
+			const url = window.URL.createObjectURL(blob)
+			const a = document.createElement("a")
+			a.href = url
+			a.download = "download.txt"
+			a.click()
+		})
+		.catch((error) => console.error("Error downloading file:", error))
+}
+
+function initializeDownloadButtons(btnId, type) {
+	document.getElementById(btnId).addEventListener("click", () => {
+		downloadFile(`/api/download/${type}`)
+	})
+	document.getElementById(btnId).addEventListener("click", () => {
+		downloadFile(`/api/download/${type}`)
+	})
+	document.getElementById(btnId).addEventListener("click", () => {
+		downloadFile(`/api/download/${type}`)
+	})
 }
 
 function logout() {

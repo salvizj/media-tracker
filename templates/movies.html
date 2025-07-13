@@ -1,109 +1,119 @@
 {{define "content_movies"}}
 <h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">Movies</h2>
 <form
-  id="movieForm"
-  class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto"
+	id="movieForm"
+	class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 max-w-md mx-auto"
 >
-  <input
-    type="text"
-    id="name"
-    name="name"
-    placeholder="Movie Name"
-    required
-    class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
-  />
-  <button
-    type="submit"
-    class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 font-semibold transition"
-  >
-    Add Movie
-  </button>
+	<input
+		type="text"
+		id="name"
+		name="name"
+		placeholder="Movie Name"
+		required
+		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+	/>
+	<button
+		type="submit"
+		class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 font-semibold transition"
+	>
+		Add Movie
+	</button>
+	<button
+		type="button"
+		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 font-semibold transition"
+		id="download-movies-btn"
+	>
+		Download Movies
+	</button>
 </form>
 
 <form
-  id="movieSearchForm"
-  class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto"
+	id="movieSearchForm"
+	class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto"
 >
-  <h3 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">
-    Search for Movies
-  </h3>
-  <input
-    type="text"
-    id="name"
-    name="name"
-    placeholder="Search Movies"
-    required
-    class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
-  />
+	<h3 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">
+		Search for Movies
+	</h3>
+	<input
+		type="text"
+		id="name"
+		name="name"
+		placeholder="Search Movies"
+		required
+		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+	/>
 </form>
 
 <ul class="space-y-2">
-  {{range .Movies}}
-  <li
-    class="movie-item flex flex-col bg-slate-200 px-4 py-2 shadow w-full gap-2"
-    data-id="{{.ID}}"
-  >
-    <div
-      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
-    >
-      <div>
-        <span class="movie-item-name font-semibold text-gray-800 text-lg"
-          >{{.Name}}</span
-        >
-        <span class="block text-sm text-gray-500 mt-1">{{.Date}}</span>
-      </div>
-    </div>
+	{{range .Movies}}
+	<li
+		class="movie-item flex flex-col bg-slate-200 px-4 py-2 shadow w-full gap-2"
+		data-id="{{.ID}}"
+	>
+		<div
+			class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1"
+		>
+			<div>
+				<span
+					class="movie-item-name font-semibold text-gray-800 text-lg"
+					>{{.Name}}</span
+				>
+				<span class="block text-sm text-gray-500 mt-1">{{.Date}}</span>
+			</div>
+		</div>
 
-    <div class="flex flex-wrap items-center justify-start sm:justify-end gap-2">
-      <button
-        class="movies-action-btn bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
-        type="button"
-        data-method="PUT"
-      >
-        Edit
-      </button>
-      <button
-        class="movies-action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
-        type="button"
-        data-method="DELETE"
-      >
-        Delete
-      </button>
-    </div>
+		<div
+			class="flex flex-wrap items-center justify-start sm:justify-end gap-2"
+		>
+			<button
+				class="movies-action-btn bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+				type="button"
+				data-method="PUT"
+			>
+				Edit
+			</button>
+			<button
+				class="movies-action-btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+				type="button"
+				data-method="DELETE"
+			>
+				Delete
+			</button>
+		</div>
 
-    <form
-      class="edit-movies-form flex flex-col sm:flex-row gap-2 mt-2 hidden w-full text-slate-600"
-      data-id="{{.ID}}"
-    >
-      <input type="hidden" name="id" value="{{.ID}}" />
-      <input type="hidden" name="date" value="{{.Date}}" />
-      <input
-        type="text"
-        name="name"
-        value="{{.Name}}"
-        required
-        class="w-full sm:flex-1 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
-      />
-      <div class="flex gap-2">
-        <button
-          type="submit"
-          class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          class="movies-cancel-edit-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md font-semibold text-sm transition w-full sm:w-auto"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  </li>
+		<form
+			class="edit-movies-form flex flex-col sm:flex-row gap-2 mt-2 hidden w-full text-slate-600"
+			data-id="{{.ID}}"
+		>
+			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="date" value="{{.Date}}" />
+			<input
+				type="text"
+				name="name"
+				value="{{.Name}}"
+				required
+				class="w-full sm:flex-1 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+			/>
+			<div class="flex gap-2">
+				<button
+					type="submit"
+					class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
+				>
+					Save
+				</button>
+				<button
+					type="button"
+					class="movies-cancel-edit-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md font-semibold text-sm transition w-full sm:w-auto"
+				>
+					Cancel
+				</button>
+			</div>
+		</form>
+	</li>
 
-  {{else}}
-  <li class="text-gray-300 italic">No Movies</li>
-  {{end}}
+	{{else}}
+	<li class="text-gray-300 italic">No Movies</li>
+	{{end}}
 </ul>
 
 {{end}}

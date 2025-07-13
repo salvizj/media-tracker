@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -15,7 +16,12 @@ import (
 
 func ManhwaAndMangaHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		entries, err := models.GetAllManhwaAndManga(db)
+		userID, err := c.Cookie("user_id")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
+			return
+		}
+		entries, err := models.GetAllManhwasAndMangasWithUserID(db, userID)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to load manhwa and manga")
 			return
@@ -98,5 +104,29 @@ func DeleteManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.Status(http.StatusNoContent)
+	}
+}
+
+func DownloadManhwasAndMangas(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		manhwaAndManga, err := models.GetAllManhwasAndMangas(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load manhwa and manga"})
+			return
+		}
+
+		var builder strings.Builder
+		for _, manhwaAndManga := range manhwaAndManga {
+			builder.WriteString(manhwaAndManga.Name + "\n")
+			builder.WriteString(manhwaAndManga.Date + "\n")
+			builder.WriteString(manhwaAndManga.CreatedAt.Format("2006-01-02") + "\n")
+			builder.WriteString(manhwaAndManga.UpdatedAt.Format("2006-01-02") + "\n")
+			builder.WriteString(manhwaAndManga.UserID + "\n")
+		}
+		content := builder.String()
+
+		filename := "manhwa_and_manga.txt"
+		c.Header("Content-Disposition", "attachment; filename="+filename)
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(content))
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -96,5 +97,34 @@ func DeleteTVShow(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.Status(http.StatusNoContent)
+	}
+}
+
+func DownloadTVShows(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := c.Cookie("user_id")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
+			return
+		}
+		tvShows, err := models.GetAllTVShowsWithUserID(db, userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load tv shows"})
+			return
+		}
+
+		var builder strings.Builder
+		for _, tvShow := range tvShows {
+			builder.WriteString(tvShow.Name + "\n")
+			builder.WriteString(tvShow.Date + "\n")
+			builder.WriteString(tvShow.CreatedAt.Format("2006-01-02") + "\n")
+			builder.WriteString(tvShow.UpdatedAt.Format("2006-01-02") + "\n")
+			builder.WriteString(tvShow.UserID + "\n")
+		}
+		content := builder.String()
+
+		filename := "tv_shows.txt"
+		c.Header("Content-Disposition", "attachment; filename="+filename)
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(content))
 	}
 }

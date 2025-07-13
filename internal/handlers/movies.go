@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -99,5 +100,33 @@ func DeleteMovie(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.Status(http.StatusNoContent)
+	}
+}
+
+func DownloadMovies(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, err := c.Cookie("user_id")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
+			return
+		}
+		movies, err := models.GetAllMoviesWithUserID(db, userID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load movies"})
+			return
+		}
+
+		var builder strings.Builder
+		for _, movie := range movies {
+			builder.WriteString(movie.Name + ";")
+			builder.WriteString(movie.Date + ";")
+			builder.WriteString(movie.CreatedAt.Format("2006-01-02") + ";")
+			builder.WriteString(movie.UpdatedAt.Format("2006-01-02") + "\n")
+		}
+		content := builder.String()
+
+		filename := "movies.txt"
+		c.Header("Content-Disposition", "attachment; filename="+filename)
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(content))
 	}
 }
