@@ -19,11 +19,7 @@
 		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition">
 		Add TV Show
 	</button>
-	<button type="button"
-		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition"
-		id="download-tv-shows-btn">
-		Download TV Shows
-	</button>
+
 </form>
 
 <form id="tvShowSearchForm" class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto">
@@ -152,7 +148,9 @@
 		</form>
 	</li>
 	{{else}}
-	<li class="text-gray-300 italic text-center">No TV shows</li>
+	<p class="text-gray-300 italic text-xl text-center">
+		No TV shows added yet
+	</p>
 	{{end}}
 </ul>
 

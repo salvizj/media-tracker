@@ -19,11 +19,7 @@
 		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition">
 		Add Manhwa/Manga
 	</button>
-	<button type="button"
-		class="w-full sm:w-auto bg-teal-600 hover:bg-teal-700 text-white px-6 py-3  font-semibold transition"
-		id="download-manhwas-and-mangas-btn">
-		Download Manhwas/Mangas
-	</button>
+
 </form>
 
 <form id="manhwaAndMangaSearchForm" class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto">
@@ -150,7 +146,9 @@
 		</form>
 	</li>
 	{{else}}
-	<li class="text-gray-300 italic text-center">No manhwa or manga</li>
+	<p class="text-gray-300 italic text-xl text-center">
+		No manhwa or manga added yet
+	</p>
 	{{end}}
 </ul>
 

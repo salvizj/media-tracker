@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupLogout()
 	updateNavVisibility()
 	setupUserIdValuePlaceholders()
+	setupDownloadButtons()
 })
 
 function initializeEditAndCancelButtons() {
@@ -355,4 +356,15 @@ function setupUserIdValuePlaceholders() {
 	document.querySelectorAll(".user-id-input").forEach((input) => {
 		input.value = getCookie("user_id")
 	})
+}
+function setupDownloadButtons() {
+	document
+		.getElementById("download-movies-btn")
+		.addEventListener("click", () => {
+			fetch("/api/movies/download")
+				.then((response) => response.json())
+				.then((data) => {
+					showMessage(data.message, "message")
+				})
+		})
 }

@@ -50,9 +50,6 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 		securedApi.PUT("/manhwa-and-manga/:id", handlers.UpdateManhwaAndManga(db))
 		securedApi.DELETE("/manhwa-and-manga/:id", handlers.DeleteManhwaAndManga(db))
 
-		securedApi.GET("/download/movies", handlers.DownloadMovies(db))
-		securedApi.GET("/download/tv-shows", handlers.DownloadTVShows(db))
-		securedApi.GET("/download/manhwa-and-manga", handlers.DownloadManhwasAndMangas(db))
 	}
 
 	return r
