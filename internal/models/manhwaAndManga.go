@@ -52,8 +52,13 @@ func InsertManhwaAndManga(db *sql.DB, m *ManhwaAndManga) error {
 	return err
 }
 
+<<<<<<< HEAD
 func GetAllManhwasAndMangas(db *sql.DB) ([]ManhwaAndManga, error) {
 	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga`)
+=======
+func GetAllManhwaAndManga(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
+	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga WHERE user_id = ?`, userID)
+>>>>>>> feature/auth
 	if err != nil {
 		return nil, err
 	}
@@ -89,12 +94,12 @@ func GetAllManhwasAndMangasWithUserID(db *sql.DB, userID string) ([]ManhwaAndMan
 }
 
 func UpdateManhwaAndManga(db *sql.DB, m ManhwaAndManga) error {
-	query := `UPDATE manhwa_and_manga SET name = ?, status = ?, date = ?, chapter = ?, user_id = ?, updated_at = ? WHERE id = ?`
-	_, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter, m.UserID, m.UpdatedAt, m.ID)
+	query := `UPDATE manhwa_and_manga SET name = ?, status = ?, date = ?, chapter = ?, user_id = ?, updated_at = ? WHERE id = ? AND user_id = ?`
+	_, err := db.Exec(query, m.Name, m.Status, m.Date, m.Chapter, m.UserID, m.UpdatedAt, m.ID, m.UserID)
 	return err
 }
 
-func DeleteManhwaAndManga(db *sql.DB, id int) error {
-	_, err := db.Exec(`DELETE FROM manhwa_and_manga WHERE id = ?`, id)
+func DeleteManhwaAndManga(db *sql.DB, id int, userID string) error {
+	_, err := db.Exec(`DELETE FROM manhwa_and_manga WHERE id = ? AND user_id = ?`, id, userID)
 	return err
 }

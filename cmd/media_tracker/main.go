@@ -36,6 +36,8 @@ func main() {
 		"templates/manhwa_and_manga.html",
 		"templates/login.html",
 		"templates/register.html",
+		"templates/restricted.html",
+		"templates/404.html",
 	)
 	if err != nil {
 		log.Fatalf("Cannot parse templates: %v", err)

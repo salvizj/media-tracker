@@ -44,7 +44,7 @@ func CreateTVShowsTable(db *sql.DB) error {
 
 func InsertTVShow(db *sql.DB, show *TVShow) error {
 	query := `INSERT INTO tv_shows (name, status, date, season, episode, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-	result, err := db.Exec(query, show.Name, show.Status, show.Date, show.Season, show.Episode, show.UserID, show.CreatedAt, show.UpdatedAt)
+	result, err := db.Exec(query, show.Name, show.Status, show.Date, show.Season, show.Episode, show.UserID, show.CreatedAt, show.UpdatedAt, show.UserID)
 	if err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func InsertTVShow(db *sql.DB, show *TVShow) error {
 	return err
 }
 
-func GetAllTVShows(db *sql.DB) ([]TVShow, error) {
-	rows, err := db.Query(`SELECT id, name, status, date, season, episode, user_id, created_at, updated_at FROM tv_shows`)
+func GetAllTVShows(db *sql.DB, userID string) ([]TVShow, error) {
+	rows, err := db.Query(`SELECT id, name, status, date, season, episode, user_id, created_at, updated_at FROM tv_shows WHERE user_id = ? ORDER BY date DESC`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -91,12 +91,12 @@ func GetAllTVShowsWithUserID(db *sql.DB, userID string) ([]TVShow, error) {
 }
 
 func UpdateTVShow(db *sql.DB, s TVShow) error {
-	query := `UPDATE tv_shows SET name = ?, status = ?, date = ?, season = ?, episode = ?, user_id = ?, updated_at = ? WHERE id = ?`
-	_, err := db.Exec(query, s.Name, s.Status, s.Date, s.Season, s.Episode, s.UserID, s.UpdatedAt, s.ID)
+	query := `UPDATE tv_shows SET name = ?, status = ?, date = ?, season = ?, episode = ?, user_id = ?, updated_at = ? WHERE id = ? AND user_id = ?`
+	_, err := db.Exec(query, s.Name, s.Status, s.Date, s.Season, s.Episode, s.UserID, s.UpdatedAt, s.ID, s.UserID)
 	return err
 }
 
-func DeleteTVShow(db *sql.DB, id int) error {
-	_, err := db.Exec(`DELETE FROM tv_shows WHERE id = ?`, id)
+func DeleteTVShow(db *sql.DB, id int, userID string) error {
+	_, err := db.Exec(`DELETE FROM tv_shows WHERE id = ? AND user_id = ?`, id, userID)
 	return err
 }

@@ -15,15 +15,15 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 	r.SetHTMLTemplate(tmpl)
 
 	r.Static("/public", "./public")
-
-	r.Use(middleware.SetAuthData(db))
-
 	r.GET("/", handlers.IndexHandler(db, tmpl))
 	r.GET("/login", handlers.LoginHandler(db, tmpl))
-	r.POST("/api/login", handlers.LoginHandler(db, tmpl))
+	r.POST("/login", handlers.LoginHandler(db, tmpl))
 	r.GET("/register", handlers.RegisterHandler(db, tmpl))
-	r.POST("/api/register", handlers.RegisterHandler(db, tmpl))
-	r.POST("/api/logout", handlers.LogoutHandler(db, tmpl))
+	r.POST("/register", handlers.RegisterHandler(db, tmpl))
+	r.POST("/logout", handlers.LogoutHandler(db, tmpl))
+
+	r.NoRoute(handlers.NotFoundHandler(db, tmpl))
+	r.NoMethod(handlers.NotFoundHandler(db, tmpl))
 
 	securedPages := r.Group("/")
 	securedPages.Use(middleware.AuthRequired(db))

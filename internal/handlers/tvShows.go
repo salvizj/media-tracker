@@ -16,20 +16,30 @@ import (
 
 func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tvShows, err := models.GetAllTVShows(db)
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		sessionID, exists := c.Get("session_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		validSession, err := models.IsSessionValid(db, sessionID.(string))
+		if !exists || err != nil || !validSession {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		tvShows, err := models.GetAllTVShows(db, userID.(string))
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to load tv shows")
 			return
-		}
-		isLoggedIn, exists := c.Get("isLoggedIn")
-		if !exists {
-			isLoggedIn = false
 		}
 		data := types.LayoutTmplData{
 			Title:           "TV shows",
 			ContentTemplate: "content_tv_shows",
 			TVShows:         tvShows,
-			IsLoggedIn:      isLoggedIn.(bool),
 		}
 		c.HTML(http.StatusOK, "layout", data)
 	}
@@ -37,12 +47,13 @@ func TVShowsHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 
 func CreateTVShow(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var input models.TVShow
+		var input models.TVShowInput
 		if err := c.BindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 			return
 		}
 		tvShow := models.TVShow{
+			UserID:    input.UserID,
 			Name:      input.Name,
 			Status:    input.Status,
 			Season:    input.Season,
@@ -86,13 +97,28 @@ func UpdateTVShow(db *sql.DB) gin.HandlerFunc {
 func DeleteTVShow(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idParam := c.Param("id")
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		sessionID, exists := c.Get("session_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		validSession, err := models.IsSessionValid(db, sessionID.(string))
+		if !exists || err != nil || !validSession {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
 		id, err := strconv.Atoi(idParam)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 			return
 		}
 
-		if err := models.DeleteTVShow(db, id); err != nil {
+		if err := models.DeleteTVShow(db, id, userID.(string)); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete record"})
 			return
 		}
