@@ -32,15 +32,26 @@ func InsertSession(db *sql.DB, session *Session) error {
 	return err
 }
 
-func GetSessionBySessionID(db *sql.DB, sessionID string) (*Session, error) {
+func GetUserIDBySessionID(db *sql.DB, sessionID string) (string, error) {
+	query := `SELECT user_id FROM sessions WHERE id = ?`
+	row := db.QueryRow(query, sessionID)
+
+	var userID string
+	if err := row.Scan(&userID); err != nil {
+		return "", err
+	}
+	return userID, nil
+}
+
+func IsSessionValid(db *sql.DB, sessionID string) (bool, error) {
 	query := `SELECT id, user_id, created_at, updated_at, expires_at FROM sessions WHERE id = ? AND expires_at > CURRENT_TIMESTAMP`
 	row := db.QueryRow(query, sessionID)
 
 	var s Session
 	if err := row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.UpdatedAt, &s.ExpiresAt); err != nil {
-		return nil, err
+		return false, err
 	}
-	return &s, nil
+	return true, nil
 }
 
 func DeleteSessionBySessionID(db *sql.DB, sessionID string) error {

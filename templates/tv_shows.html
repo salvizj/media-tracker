@@ -2,6 +2,7 @@
 <h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">TV Shows</h2>
 <form id="tvShowForm"
 	class="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3 mb-8 max-w-4xl mx-auto px-4 sm:px-0">
+	<input type="hidden" name="user_id" class="user-id-input" value=""/>
 	<input type="text" id="tvShowName" name="name" placeholder="TV Show Name" required
 		class="w-full sm:flex-1 min-w-[200px] px-4 py-3  border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition" />
 	<input type="number" id="tvShowSeason" name="season" placeholder="Season" min="1" required
@@ -100,6 +101,7 @@
 
 		<form class="tv-shows-increment-and-decrement-form " data-id="{{.ID}}">
 			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="user_id" class="user-id-input" value="" />
 			<input type="hidden" name="date" value="{{.Date}}" />
 			<input type="hidden" name="name" value="{{.Name}}" />
 			<input type="hidden" name="season" value="{{.Season}}" />
@@ -117,6 +119,7 @@
 		<form class="edit-tv-shows-form flex flex-col sm:flex-row flex-wrap gap-2 mt-2 hidden w-full text-slate-600"
 			data-id="{{.ID}}">
 			<input type="hidden" name="id" value="{{.ID}}" />
+			<input type="hidden" name="user_id" class="user-id-input" value="" />
 			<input type="hidden" name="date" value="{{.Date}}" />
 			<input type="text" name="name" value="{{.Name}}" required
 				class="w-full sm:flex-1 px-2 py-1 border border-gray-300  focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm" />

@@ -29,10 +29,13 @@ func CreateUserTable(db *sql.DB) error {
 	return err
 }
 
-func InsertUser(db *sql.DB, user *User) error {
+func InsertUser(db *sql.DB, user *User) (error, bool) {
 	query := `INSERT INTO users (id, email, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
 	_, err := db.Exec(query, user.ID, user.Email, user.Password, user.CreatedAt, user.UpdatedAt)
-	return err
+	if err != nil {
+		return err, false
+	}
+	return nil, true
 }
 
 func LoginUser(db *sql.DB, user *User) (string, error) {
@@ -44,7 +47,6 @@ func LoginUser(db *sql.DB, user *User) (string, error) {
 		return "", err
 	}
 
-	// Compare the provided password with the stored hash
 	if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(user.Password)); err != nil {
 		return "", err
 	}

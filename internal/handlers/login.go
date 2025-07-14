@@ -15,111 +15,67 @@ import (
 func LoginHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method == http.MethodGet {
-			isLoggedIn, exists := c.Get("isLoggedIn")
-			if !exists {
-				isLoggedIn = false
-			}
 			data := types.LayoutTmplData{
 				Title:           "Media Tracker",
 				ContentTemplate: "content_login",
-				IsLoggedIn:      isLoggedIn.(bool),
 			}
 			c.HTML(http.StatusOK, "layout", data)
+			return
 		}
 
 		if c.Request.Method == http.MethodPost {
 			var user models.User
 			if err := c.BindJSON(&user); err != nil {
-				if c.Request.URL.Path == "/api/login" {
-					c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-				} else {
-					data := types.LayoutTmplData{
-						Title:           "Media Tracker",
-						ContentTemplate: "content_login",
-						Error:           "Invalid input",
-						IsLoggedIn:      false,
-					}
-					data.Error = "Invalid input"
-					c.HTML(http.StatusBadRequest, "layout", data)
-				}
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 				return
 			}
 
 			userID, err := models.LoginUser(db, &user)
 			if err != nil {
-				if c.Request.URL.Path == "/api/login" {
-					c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
-				} else {
-					data := types.LayoutTmplData{
-						Title:           "Media Tracker",
-						ContentTemplate: "content_login",
-						Error:           "Invalid email or password",
-						IsLoggedIn:      false,
-					}
-					data.Error = "Invalid email or password"
-					c.HTML(http.StatusInternalServerError, "layout", data)
-				}
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 				return
 			}
 
-			user.ID = userID
 			session := models.Session{
 				ID:        utils.GenerateUUID(),
-				UserID:    user.ID,
+				UserID:    userID,
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
-				ExpiresAt: time.Now().Add(24 * time.Hour),
+				ExpiresAt: time.Now().Add(1 * time.Hour),
 			}
 
 			err = models.InsertSession(db, &session)
 			if err != nil {
-				if c.Request.URL.Path == "/api/login" {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
-				} else {
-					data := types.LayoutTmplData{
-						Title:           "Media Tracker",
-						ContentTemplate: "content_login",
-						Error:           "Failed to create session",
-						IsLoggedIn:      false,
-					}
-					data.Error = "Failed to create session"
-					c.HTML(http.StatusInternalServerError, "layout", data)
-				}
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
 				return
 			}
 
-			models.CleanUpExpiredSessions(db)
-			cookie := http.Cookie{
+			_ = models.CleanUpExpiredSessions(db)
+
+			sessionCookie := http.Cookie{
 				Name:     "session_id",
 				Value:    session.ID,
-				Expires:  session.ExpiresAt,
-				HttpOnly: true,
-				Secure:   true,
+				MaxAge:   3600,
+				Path:     "/",
+				Domain:   "",
+				HttpOnly: false,
+				Secure:   false,
 			}
-			c.SetCookie(cookie.Name, cookie.Value, 3600, "/", "", false, true)
+			c.SetCookie(sessionCookie.Name, sessionCookie.Value, sessionCookie.MaxAge, sessionCookie.Path, sessionCookie.Domain, sessionCookie.Secure, sessionCookie.HttpOnly)
 
 			userCookie := http.Cookie{
 				Name:     "user_id",
 				Value:    user.ID,
-				Expires:  time.Now().Add(24 * time.Hour),
+				MaxAge:   3600,
+				Path:     "/",
+				Domain:   "",
 				HttpOnly: false,
-				Secure:   true,
+				Secure:   false,
 			}
-			c.SetCookie(userCookie.Name, userCookie.Value, 3600, "/", "", false, true)
+			c.SetCookie(userCookie.Name, userCookie.Value, userCookie.MaxAge, userCookie.Path, userCookie.Domain, userCookie.Secure, userCookie.HttpOnly)
 
-			if c.Request.URL.Path == "/api/login" {
-				c.JSON(http.StatusOK, gin.H{
-					"message": "Login successful",
-					"userID":  user.ID,
-				})
-			} else {
-				data := types.LayoutTmplData{
-					Title:           "Media Tracker",
-					ContentTemplate: "content_index",
-					IsLoggedIn:      true,
-				}
-				c.HTML(http.StatusOK, "layout", data)
-			}
+			c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+			return
 		}
 	}
 }

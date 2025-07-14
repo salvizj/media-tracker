@@ -35,7 +35,7 @@ func CreateMoviesTable(db *sql.DB) error {
 
 func InsertMovie(db *sql.DB, m *Movie) error {
 	query := `INSERT INTO movies (name, date, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`
-	result, err := db.Exec(query, m.Name, m.Date, m.UserID, m.CreatedAt, m.UpdatedAt)
+	result, err := db.Exec(query, m.Name, m.Date, m.UserID, m.CreatedAt, m.UpdatedAt, m.UserID)
 	if err != nil {
 		return err
 	}
@@ -46,8 +46,8 @@ func InsertMovie(db *sql.DB, m *Movie) error {
 	return err
 }
 
-func GetAllMovies(db *sql.DB) ([]Movie, error) {
-	rows, err := db.Query(`SELECT id, name, date, user_id, created_at, updated_at FROM movies`)
+func GetAllMovies(db *sql.DB, userID string) ([]Movie, error) {
+	rows, err := db.Query(`SELECT id, name, date, user_id, created_at, updated_at FROM movies WHERE user_id = ?`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +65,12 @@ func GetAllMovies(db *sql.DB) ([]Movie, error) {
 }
 
 func UpdateMovie(db *sql.DB, m Movie) error {
-	query := `UPDATE movies SET name = ?, date = ?, user_id = ?, updated_at = ? WHERE id = ?`
-	_, err := db.Exec(query, m.Name, m.Date, m.UserID, m.UpdatedAt, m.ID)
+	query := `UPDATE movies SET name = ?, date = ?, user_id = ?, updated_at = ? WHERE id = ? AND user_id = ?`
+	_, err := db.Exec(query, m.Name, m.Date, m.UserID, m.UpdatedAt, m.ID, m.UserID)
 	return err
 }
 
-func DeleteMovie(db *sql.DB, id int) error {
-	_, err := db.Exec(`DELETE FROM movies WHERE id = ?`, id)
+func DeleteMovie(db *sql.DB, id int, userID string) error {
+	_, err := db.Exec(`DELETE FROM movies WHERE id = ? AND user_id = ?`, id, userID)
 	return err
 }

@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		"manhwa-and-manga",
 		"chapter"
 	)
+	setupLogout()
+	updateNavVisibility()
+	setupUserIdValuePlaceholders()
 })
 
 function initializeEditAndCancelButtons() {
@@ -37,8 +40,8 @@ function initializeForms() {
 	handleFormSubmission("movieForm", "/api/movies", "POST")
 	handleFormSubmission("tvShowForm", "/api/tv-shows", "POST")
 	handleFormSubmission("manhwaAndMangaForm", "/api/manhwa-and-manga", "POST")
-	handleFormSubmission("loginForm", "/api/login", "POST")
-	handleFormSubmission("registerForm", "/api/register", "POST")
+	handleFormSubmission("loginForm", "/login", "POST", null, true)
+	handleFormSubmission("registerForm", "/register", "POST", null, true)
 }
 
 function initializeSearchForms() {
@@ -103,11 +106,17 @@ function setupEditAndCancelButtonsForType(type) {
 	})
 }
 
-function handleFormSubmission(formOrId, apiPath, method = "POST") {
+function handleFormSubmission(
+	formOrFormId,
+	apiPath,
+	method = "POST",
+	apiPathID = null,
+	authSubmission = false
+) {
 	const form =
-		typeof formOrId === "string"
-			? document.getElementById(formOrId)
-			: formOrId
+		typeof formOrFormId === "string"
+			? document.getElementById(formOrFormId)
+			: formOrFormId
 	if (!form) return
 
 	form.addEventListener("submit", async (e) => {
@@ -116,10 +125,7 @@ function handleFormSubmission(formOrId, apiPath, method = "POST") {
 		new FormData(form).forEach((value, key) => {
 			body[key] = isNaN(value) ? value : Number(value)
 		})
-		let url = apiPath
-		if (method === "PUT" && form.id && form.id.value) {
-			url += `/${form.id.value}`
-		}
+		const url = apiPathID ? `${apiPath}/${apiPathID}` : apiPath
 		try {
 			const response = await fetch(url, {
 				method,
@@ -134,8 +140,8 @@ function handleFormSubmission(formOrId, apiPath, method = "POST") {
 
 			const data = await response.json()
 
-			if (form.id === "loginForm" || form.id === "registerForm") {
-				showMessage(data.message || "Success!", "success")
+			if (authSubmission) {
+				showMessage(data.message || "Success!", "message")
 				setTimeout(() => {
 					window.location.href = "/"
 				}, 1000)
@@ -149,7 +155,7 @@ function handleFormSubmission(formOrId, apiPath, method = "POST") {
 	})
 }
 
-function showMessage(message, type = "info") {
+function showMessage(message, type = "message") {
 	const messageBox = document.getElementById("message-box")
 	if (!messageBox) return
 
@@ -162,12 +168,10 @@ function showMessage(message, type = "info") {
 		"text-white"
 	)
 
-	if (type === "success") {
+	if (type === "message") {
 		messageBox.classList.add("bg-green-500", "text-white")
 	} else if (type === "error") {
 		messageBox.classList.add("bg-red-500", "text-white")
-	} else {
-		messageBox.classList.add("bg-blue-500", "text-white")
 	}
 
 	messageBox.classList.remove("hidden")
@@ -181,29 +185,24 @@ function getCurrentUserID() {
 	return getCookie("user_id")
 }
 
-function logout() {
-	document.getElementById("logout-btn").addEventListener("click", () => {
-		fetch("/api/logout", {
+function setupLogout() {
+	const logoutBtn = document.getElementById("logout-btn")
+	if (!logoutBtn) return
+
+	logoutBtn.addEventListener("click", async (e) => {
+		fetch("/logout", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("Logout failed")
-				}
-				return response.json()
-			})
+			.then((response) => response.json())
 			.then((data) => {
-				showMessage(
-					data.message || "Logged out successfully",
-					"success"
-				)
+				showMessage(data.message, "message")
 				setTimeout(() => {
 					window.location.href = "/login"
 				}, 1000)
 			})
 			.catch((error) => {
-				showMessage("Logout failed", "error")
+				showMessage(error.message, "error")
 			})
 	})
 }
@@ -214,16 +213,34 @@ function getCookie(name) {
 	if (parts.length === 2) return parts.pop().split(";").shift()
 	return null
 }
+function isLoggedIn() {
+	return getCookie("session_id") !== null && getCookie("user_id") !== null
+}
 
 function initializeAllEditForms() {
 	document.querySelectorAll(".edit-movies-form").forEach((form) => {
-		handleFormSubmission(form, "/api/movies", { name: "string" }, "PUT")
+		handleFormSubmission(
+			form,
+			"/api/movies",
+			"PUT",
+			form.querySelector('input[name="id"]').value
+		)
 	})
 	document.querySelectorAll(".edit-tv-shows-form").forEach((form) => {
-		handleFormSubmission(form, "/api/tv-shows", "PUT")
+		handleFormSubmission(
+			form,
+			"/api/tv-shows",
+			"PUT",
+			form.querySelector('input[name="id"]').value
+		)
 	})
 	document.querySelectorAll(".edit-manhwa-and-manga-form").forEach((form) => {
-		handleFormSubmission(form, "/api/manhwa-and-manga", "PUT")
+		handleFormSubmission(
+			form,
+			"/api/manhwa-and-manga",
+			"PUT",
+			form.querySelector('input[name="id"]').value
+		)
 	})
 }
 
@@ -324,4 +341,18 @@ function initializeIncrementDecrementButtons(
 				}
 			})
 		})
+}
+
+function updateNavVisibility() {
+	document
+		.getElementById("nav-logged-in")
+		.classList.toggle("hidden", !isLoggedIn())
+	document
+		.getElementById("nav-logged-out")
+		.classList.toggle("hidden", isLoggedIn())
+}
+function setupUserIdValuePlaceholders() {
+	document.querySelectorAll(".user-id-input").forEach((input) => {
+		input.value = getCookie("user_id")
+	})
 }

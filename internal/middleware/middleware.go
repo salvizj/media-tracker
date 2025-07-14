@@ -3,6 +3,7 @@ package middleware
 import (
 	"database/sql"
 	"media_tracker/internal/models"
+	"media_tracker/internal/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,40 +11,31 @@ import (
 
 func AuthRequired(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		cookie, err := c.Cookie("session_id")
-		if err != nil || cookie == "" {
-			c.AbortWithStatus(http.StatusUnauthorized)
+		cookieValue, err := c.Cookie("session_id")
+		if err != nil || cookieValue == "" {
+			data := types.LayoutTmplData{
+				Title:           "Media Tracker",
+				ContentTemplate: "content_restricted",
+			}
+			c.HTML(http.StatusUnauthorized, "layout", data)
 			return
 		}
-		session, err := models.GetSessionBySessionID(db, cookie)
+		userID, err := models.GetUserIDBySessionID(db, cookieValue)
 		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		c.Set("userID", session.UserID)
-		c.Set("isLoggedIn", true)
-		c.Next()
-	}
-}
-
-func SetAuthData(db *sql.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		cookie, err := c.Cookie("session_id")
-		if err != nil || cookie == "" {
-			c.Set("isLoggedIn", false)
-			c.Next()
+		valid, err := models.IsSessionValid(db, cookieValue)
+		if err != nil || !valid {
+			data := types.LayoutTmplData{
+				Title:           "Media Tracker",
+				ContentTemplate: "content_restricted",
+			}
+			c.HTML(http.StatusUnauthorized, "layout", data)
 			return
 		}
-
-		session, err := models.GetSessionBySessionID(db, cookie)
-		if err != nil {
-			c.Set("isLoggedIn", false)
-			c.Next()
-			return
-		}
-
-		c.Set("userID", session.UserID)
-		c.Set("isLoggedIn", true)
+		c.Set("session_id", cookieValue)
+		c.Set("user_id", userID)
 		c.Next()
 	}
 }
