@@ -52,13 +52,8 @@ func InsertManhwaAndManga(db *sql.DB, m *ManhwaAndManga) error {
 	return err
 }
 
-<<<<<<< HEAD
-func GetAllManhwasAndMangas(db *sql.DB) ([]ManhwaAndManga, error) {
-	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga`)
-=======
 func GetAllManhwaAndManga(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
-	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga WHERE user_id = ?`, userID)
->>>>>>> feature/auth
+	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga WHERE user_id = ? ORDER BY date DESC`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +70,7 @@ func GetAllManhwaAndManga(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
 	return list, nil
 }
 
-func GetAllManhwasAndMangasWithUserID(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
+func GetAllManhwasAndMangas(db *sql.DB, userID string) ([]ManhwaAndManga, error) {
 	rows, err := db.Query(`SELECT id, name, status, date, chapter, user_id, created_at, updated_at FROM manhwa_and_manga WHERE user_id = ?`, userID)
 	if err != nil {
 		return nil, err

@@ -19,18 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		"manhwa-and-manga",
 		"chapter"
 	)
-<<<<<<< HEAD
-	initializeDownloadButtons("download-movies-btn", "movies")
-	initializeDownloadButtons("download-tv-shows-btn", "tv-shows")
-	initializeDownloadButtons(
-		"download-manhwas-and-mangas-btn",
-		"manhwas-and-mangas"
-	)
-=======
 	setupLogout()
 	updateNavVisibility()
 	setupUserIdValuePlaceholders()
->>>>>>> feature/auth
 })
 
 function initializeEditAndCancelButtons() {
@@ -194,45 +185,12 @@ function getCurrentUserID() {
 	return getCookie("user_id")
 }
 
-<<<<<<< HEAD
-function downloadFile(url) {
-	fetch(url, {
-		method: "GET",
-	})
-		.then((response) => response.blob())
-		.then((blob) => {
-			const url = window.URL.createObjectURL(blob)
-			const a = document.createElement("a")
-			a.href = url
-			a.download = "download.txt"
-			a.click()
-		})
-		.catch((error) => console.error("Error downloading file:", error))
-}
-
-function initializeDownloadButtons(btnId, type) {
-	document.getElementById(btnId).addEventListener("click", () => {
-		downloadFile(`/api/download/${type}`)
-	})
-	document.getElementById(btnId).addEventListener("click", () => {
-		downloadFile(`/api/download/${type}`)
-	})
-	document.getElementById(btnId).addEventListener("click", () => {
-		downloadFile(`/api/download/${type}`)
-	})
-}
-
-function logout() {
-	document.getElementById("logout-btn").addEventListener("click", () => {
-		fetch("/api/logout", {
-=======
 function setupLogout() {
 	const logoutBtn = document.getElementById("logout-btn")
 	if (!logoutBtn) return
 
 	logoutBtn.addEventListener("click", async (e) => {
 		fetch("/logout", {
->>>>>>> feature/auth
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 		})

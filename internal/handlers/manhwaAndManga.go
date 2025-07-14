@@ -16,14 +16,6 @@ import (
 
 func ManhwaAndMangaHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc {
 	return func(c *gin.Context) {
-<<<<<<< HEAD
-		userID, err := c.Cookie("user_id")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
-			return
-		}
-		entries, err := models.GetAllManhwasAndMangasWithUserID(db, userID)
-=======
 		userID, exists := c.Get("user_id")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -36,7 +28,6 @@ func ManhwaAndMangaHandler(db *sql.DB, tmpl *template.Template) gin.HandlerFunc 
 			return
 		}
 		entries, err := models.GetAllManhwaAndManga(db, userID.(string))
->>>>>>> feature/auth
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to load manhwa and manga")
 			return
@@ -125,7 +116,22 @@ func DeleteManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 
 func DownloadManhwasAndMangas(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		manhwaAndManga, err := models.GetAllManhwasAndMangas(db)
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		sessionID, exists := c.Get("session_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		validSession, err := models.IsSessionValid(db, sessionID.(string))
+		if !exists || err != nil || !validSession {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		manhwaAndManga, err := models.GetAllManhwaAndManga(db, userID.(string))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load manhwa and manga"})
 			return
