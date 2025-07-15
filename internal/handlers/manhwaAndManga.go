@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -110,5 +111,67 @@ func DeleteManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 		c.Status(http.StatusNoContent)
+	}
+}
+
+func DownloadManhwaAndMangaHandler(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		entries, err := models.GetAllManhwaAndManga(db, userID.(string))
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Failed to load manhwa and manga")
+			return
+		}
+		c.Header("Content-Disposition", "attachment; filename=manhwa_and_manga.txt")
+		c.Header("Content-Type", "text/plain")
+		for _, entry := range entries {
+			line := entry.Name + " | Status: " + entry.Status + " | Chapter: " + strconv.Itoa(entry.Chapter) + " | Date: " + entry.Date + "\n"
+			c.Writer.WriteString(line)
+		}
+	}
+}
+
+func BulkAddManhwaAndMangaHandler(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		bulk := c.PostForm("bulk_manhwa_and_manga")
+		lines := strings.Split(bulk, "\n")
+		var added int
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			// Expected format: Name | Status: ... | Chapter: ... | Date: ...
+			parts := strings.Split(line, "|")
+			if len(parts) < 4 {
+				continue
+			}
+			name := strings.TrimSpace(parts[0])
+			status := strings.TrimSpace(strings.TrimPrefix(parts[1], "Status:"))
+			chapterStr := strings.TrimSpace(strings.TrimPrefix(parts[2], "Chapter:"))
+			date := strings.TrimSpace(strings.TrimPrefix(parts[3], "Date:"))
+			chapter, _ := strconv.Atoi(chapterStr)
+			entry := models.ManhwaAndManga{
+				Name:      name,
+				Status:    status,
+				Chapter:   chapter,
+				Date:      date,
+				UserID:    userID.(string),
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			_ = models.InsertManhwaAndManga(db, &entry)
+			added++
+		}
+		c.Redirect(http.StatusSeeOther, "/manhwa-and-manga")
 	}
 }

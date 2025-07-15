@@ -1,5 +1,16 @@
 {{define "content_tv_shows"}}
 <h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">TV Shows</h2>
+<div class="flex justify-center mb-4">
+  <a href="/download/tv-shows" class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded font-semibold shadow transition">Download All TV Shows (TXT)</a>
+</div>
+<div class="flex justify-center mb-8">
+  <form action="/bulk-add/tv-shows" method="POST" class="w-full max-w-2xl bg-slate-100 p-4 rounded shadow">
+    <label for="bulk_tv_shows" class="block font-semibold mb-2">Bulk Add TV Shows</label>
+    <p class="text-sm text-gray-600 mb-2">Paste one TV show per line, format: <br><code>Name | Status: Watching | Season: 1 | Episode: 1 | Date: 2024-01-01</code></p>
+    <textarea id="bulk_tv_shows" name="bulk_tv_shows" rows="5" class="w-full border border-gray-300 rounded p-2 mb-2 text-gray-600" placeholder="Paste here..."></textarea>
+    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded font-semibold">Bulk Add</button>
+  </form>
+</div>
 <form id="tvShowForm"
 	class="flex flex-col sm:flex-row sm:items-center sm:justify-start gap-3 mb-8 max-w-4xl mx-auto px-4 sm:px-0">
 	<input type="hidden" name="user_id" class="user-id-input" value=""/>

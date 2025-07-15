@@ -114,30 +114,59 @@ func DeleteMovie(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func DownloadMovies(db *sql.DB) gin.HandlerFunc {
+func DownloadMoviesHandler(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID, err := c.Cookie("user_id")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		movies, err := models.GetAllMoviesWithUserID(db, userID)
+		movies, err := models.GetAllMovies(db, userID.(string))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load movies"})
+			c.String(http.StatusInternalServerError, "Failed to load movies")
 			return
 		}
-
-		var builder strings.Builder
+		c.Header("Content-Disposition", "attachment; filename=movies.txt")
+		c.Header("Content-Type", "text/plain")
 		for _, movie := range movies {
-			builder.WriteString(movie.Name + ";")
-			builder.WriteString(movie.Date + ";")
-			builder.WriteString(movie.CreatedAt.Format("2006-01-02") + ";")
-			builder.WriteString(movie.UpdatedAt.Format("2006-01-02") + "\n")
+			line := movie.Name + " | Date: " + movie.Date + "\n"
+			c.Writer.WriteString(line)
 		}
-		content := builder.String()
+	}
+}
 
-		filename := "movies.txt"
-		c.Header("Content-Disposition", "attachment; filename="+filename)
-		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(content))
+func BulkAddMoviesHandler(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		bulk := c.PostForm("bulk_movies")
+		lines := strings.Split(bulk, "\n")
+		var added int
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			// Expected format: Name | Date: ...
+			parts := strings.Split(line, "|")
+			if len(parts) < 2 {
+				continue
+			}
+			name := strings.TrimSpace(parts[0])
+			date := strings.TrimSpace(strings.TrimPrefix(parts[1], "Date:"))
+			movie := models.Movie{
+				Name:      name,
+				Date:      date,
+				UserID:    userID.(string),
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			_ = models.InsertMovie(db, &movie)
+			added++
+		}
+		c.Redirect(http.StatusSeeOther, "/movies")
 	}
 }

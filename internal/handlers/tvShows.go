@@ -126,31 +126,69 @@ func DeleteTVShow(db *sql.DB) gin.HandlerFunc {
 	}
 }
 
-func DownloadTVShows(db *sql.DB) gin.HandlerFunc {
+func DownloadTVShowsHandler(db *sql.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userID, err := c.Cookie("user_id")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user ID"})
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		tvShows, err := models.GetAllTVShowsWithUserID(db, userID)
+		tvShows, err := models.GetAllTVShows(db, userID.(string))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load tv shows"})
+			c.String(http.StatusInternalServerError, "Failed to load tv shows")
 			return
 		}
-
-		var builder strings.Builder
-		for _, tvShow := range tvShows {
-			builder.WriteString(tvShow.Name + "\n")
-			builder.WriteString(tvShow.Date + "\n")
-			builder.WriteString(tvShow.CreatedAt.Format("2006-01-02") + "\n")
-			builder.WriteString(tvShow.UpdatedAt.Format("2006-01-02") + "\n")
-			builder.WriteString(tvShow.UserID + "\n")
+		c.Header("Content-Disposition", "attachment; filename=tv_shows.txt")
+		c.Header("Content-Type", "text/plain")
+		for _, show := range tvShows {
+			line := show.Name + " | Status: " + show.Status + " | Season: " + strconv.Itoa(show.Season) + " | Episode: " + strconv.Itoa(show.Episode) + " | Date: " + show.Date + "\n"
+			c.Writer.WriteString(line)
 		}
-		content := builder.String()
+	}
+}
 
-		filename := "tv_shows.txt"
-		c.Header("Content-Disposition", "attachment; filename="+filename)
-		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(content))
+func BulkAddTVShowsHandler(db *sql.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+		bulk := c.PostForm("bulk_tv_shows")
+		lines := strings.Split(bulk, "\n")
+		var added int
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			// Expected format: Name | Status: ... | Season: ... | Episode: ... | Date: ...
+			parts := strings.Split(line, "|")
+			if len(parts) < 5 {
+				continue
+			}
+			name := strings.TrimSpace(parts[0])
+			status := strings.TrimSpace(strings.TrimPrefix(parts[1], "Status:"))
+			seasonStr := strings.TrimSpace(strings.TrimPrefix(parts[2], "Season:"))
+			episodeStr := strings.TrimSpace(strings.TrimPrefix(parts[3], "Episode:"))
+			date := strings.TrimSpace(strings.TrimPrefix(parts[4], "Date:"))
+			season, _ := strconv.Atoi(seasonStr)
+			episode, _ := strconv.Atoi(episodeStr)
+
+			tvShow := models.TVShow{
+				UserID:    userID.(string),
+				Name:      name,
+				Status:    status,
+				Season:    season,
+				Episode:   episode,
+				Date:      date,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			if err := models.InsertTVShow(db, &tvShow); err == nil {
+				added++
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Added " + strconv.Itoa(added) + " TV shows"})
 	}
 }

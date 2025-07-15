@@ -31,6 +31,14 @@ func NewRouter(db *sql.DB, tmpl *template.Template) http.Handler {
 		securedPages.GET("/manhwa-and-manga", handlers.ManhwaAndMangaHandler(db, tmpl))
 		securedPages.GET("/movies", handlers.MoviesHandler(db, tmpl))
 		securedPages.GET("/tv-shows", handlers.TVShowsHandler(db, tmpl))
+
+		securedPages.GET("/download/tv-shows", handlers.DownloadTVShowsHandler(db))
+		securedPages.GET("/download/manhwa-and-manga", handlers.DownloadManhwaAndMangaHandler(db))
+		securedPages.GET("/download/movies", handlers.DownloadMoviesHandler(db))
+		// Bulk add endpoints
+		securedPages.POST("/bulk-add/tv-shows", handlers.BulkAddTVShowsHandler(db))
+		securedPages.POST("/bulk-add/manhwa-and-manga", handlers.BulkAddManhwaAndMangaHandler(db))
+		securedPages.POST("/bulk-add/movies", handlers.BulkAddMoviesHandler(db))
 	}
 
 	api := r.Group("/api")
