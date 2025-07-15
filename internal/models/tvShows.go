@@ -8,7 +8,7 @@ import (
 type TVShow struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
-	Status    string    `json:"status"`
+	Status    Status    `json:"status"`
 	Date      string    `json:"date"`
 	Season    int       `json:"season"`
 	Episode   int       `json:"episode"`
@@ -19,7 +19,7 @@ type TVShow struct {
 
 type TVShowInput struct {
 	Name    string `json:"name"`
-	Status  string `json:"status"`
+	Status  Status `json:"status"`
 	Season  int    `json:"season"`
 	Episode int    `json:"episode"`
 	UserID  string `json:"user_id"`

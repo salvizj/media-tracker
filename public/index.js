@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupLogout()
 	updateNavVisibility()
 	setupUserIdValuePlaceholders()
-	setupDownloadButtons()
+	setupBulkUploadForms()
 })
 
 function initializeEditAndCancelButtons() {
@@ -357,14 +357,137 @@ function setupUserIdValuePlaceholders() {
 		input.value = getCookie("user_id")
 	})
 }
-function setupDownloadButtons() {
-	document
-		.getElementById("download-movies-btn")
-		.addEventListener("click", () => {
-			fetch("/api/movies/download")
-				.then((response) => response.json())
-				.then((data) => {
-					showMessage(data.message, "message")
-				})
-		})
+
+function setupBulkTvShows() {
+	const form = document.getElementById("bulkTvShowsForm")
+	if (!form) return
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault()
+		const textarea = document.getElementById("bulk_tv_shows")
+		const lines = textarea.value
+			.split("\n")
+			.map((l) => l.trim())
+			.filter((l) => l)
+		const items = lines
+			.map((line) => {
+				const parts = line.split("|").map((p) => p.trim())
+				if (parts.length < 5) return null
+				return {
+					name: parts[0],
+					status: parts[1],
+					season: Number(parts[2]),
+					episode: Number(parts[3]),
+					date: parts[4],
+				}
+			})
+			.filter(Boolean)
+		try {
+			const res = await fetch("/bulk-add/tv-shows", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(items),
+			})
+			const data = await res.json()
+			showMessage(
+				data.message || "Bulk add complete!",
+				res.ok ? "message" : "error"
+			)
+			if (res.ok) textarea.value = ""
+			setTimeout(() => {
+				location.reload()
+			}, 1000)
+		} catch (err) {
+			showMessage(err.message || "Bulk add failed", "error")
+		}
+	})
+}
+
+function setupBulkManhwa() {
+	const form = document.getElementById("bulkManhwaAndMangaForm")
+	if (!form) return
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault()
+		const textarea = document.getElementById("bulk_manhwa_and_manga")
+		const lines = textarea.value
+			.split("\n")
+			.map((l) => l.trim())
+			.filter((l) => l)
+		const items = lines
+			.map((line) => {
+				const parts = line.split("|").map((p) => p.trim())
+				if (parts.length < 4) return null
+				return {
+					name: parts[0],
+					status: parts[1],
+					chapter: Number(parts[2]),
+					date: parts[3],
+				}
+			})
+			.filter(Boolean)
+		try {
+			const res = await fetch("/bulk-add/manhwa-and-manga", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(items),
+			})
+			const data = await res.json()
+			showMessage(
+				data.message || "Bulk add complete!",
+				res.ok ? "message" : "error"
+			)
+			if (res.ok) textarea.value = ""
+			setTimeout(() => {
+				location.reload()
+			}, 1000)
+		} catch (err) {
+			showMessage(err.message || "Bulk add failed", "error")
+		}
+	})
+}
+
+function setupBulkMovies() {
+	const form = document.getElementById("bulkMoviesForm")
+	if (!form) return
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault()
+		const textarea = document.getElementById("bulk_movies")
+		const lines = textarea.value
+			.split("\n")
+			.map((l) => l.trim())
+			.filter((l) => l)
+		const items = lines
+			.map((line) => {
+				const parts = line.split("|").map((p) => p.trim())
+				if (parts.length < 2) return null
+				return {
+					name: parts[0],
+					date: parts[1],
+				}
+			})
+			.filter(Boolean)
+		try {
+			const res = await fetch("/bulk-add/movies", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(items),
+			})
+			const data = await res.json()
+			showMessage(
+				data.message || "Bulk add complete!",
+				res.ok ? "message" : "error"
+			)
+			if (res.ok) textarea.value = ""
+			setTimeout(() => {
+				location.reload()
+			}, 1000)
+		} catch (err) {
+			showMessage(err.message || "Bulk add failed", "error")
+		}
+	})
+}
+
+function setupBulkUploadForms() {
+	setupBulkTvShows()
+	setupBulkManhwa()
+	setupBulkMovies()
 }

@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -142,31 +141,37 @@ func BulkAddMoviesHandler(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		bulk := c.PostForm("bulk_movies")
-		lines := strings.Split(bulk, "\n")
-		var added int
-		for _, line := range lines {
-			line = strings.TrimSpace(line)
-			if line == "" {
+		var items []struct {
+			Name string `json:"name"`
+			Date string `json:"date"`
+		}
+		if err := c.ShouldBindJSON(&items); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input format"})
+			return
+		}
+		added, errors := 0, 0
+		for _, item := range items {
+			if item.Name == "" {
+				errors++
 				continue
 			}
-			// Expected format: Name | Date: ...
-			parts := strings.Split(line, "|")
-			if len(parts) < 2 {
-				continue
-			}
-			name := strings.TrimSpace(parts[0])
-			date := strings.TrimSpace(strings.TrimPrefix(parts[1], "Date:"))
 			movie := models.Movie{
-				Name:      name,
-				Date:      date,
+				Name:      item.Name,
+				Date:      item.Date,
 				UserID:    userID.(string),
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
-			_ = models.InsertMovie(db, &movie)
-			added++
+			if err := models.InsertMovie(db, &movie); err == nil {
+				added++
+			} else {
+				errors++
+			}
 		}
-		c.Redirect(http.StatusSeeOther, "/movies")
+		msg := "Added " + strconv.Itoa(added) + " movies."
+		if errors > 0 {
+			msg += " " + strconv.Itoa(errors) + " lines had errors."
+		}
+		c.JSON(http.StatusOK, gin.H{"message": msg})
 	}
 }

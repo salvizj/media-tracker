@@ -9,17 +9,14 @@
 </div>
 <div class="flex justify-center mb-8">
 	<form
-		action="/bulk-add/movies"
-		method="POST"
+		id="bulkMoviesForm"
 		class="w-full max-w-2xl bg-slate-100 p-4 rounded shadow"
 	>
 		<label for="bulk_movies" class="block font-semibold mb-2"
 			>Bulk Add Movies</label
 		>
 		<p class="text-sm text-gray-600 mb-2">
-			Paste one movie per line, format: <br /><code
-				>Name | Date: 2024-01-01</code
-			>
+			Paste one movie per line, format: <br /><code>Name | Date</code>
 		</p>
 		<textarea
 			id="bulk_movies"

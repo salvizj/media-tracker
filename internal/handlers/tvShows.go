@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -141,7 +140,7 @@ func DownloadTVShowsHandler(db *sql.DB) gin.HandlerFunc {
 		c.Header("Content-Disposition", "attachment; filename=tv_shows.txt")
 		c.Header("Content-Type", "text/plain")
 		for _, show := range tvShows {
-			line := show.Name + " | Status: " + show.Status + " | Season: " + strconv.Itoa(show.Season) + " | Episode: " + strconv.Itoa(show.Episode) + " | Date: " + show.Date + "\n"
+			line := show.Name + " | Status: " + string(show.Status) + " | Season: " + strconv.Itoa(show.Season) + " | Episode: " + strconv.Itoa(show.Episode) + " | Date: " + show.Date + "\n"
 			c.Writer.WriteString(line)
 		}
 	}
@@ -154,41 +153,43 @@ func BulkAddTVShowsHandler(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		bulk := c.PostForm("bulk_tv_shows")
-		lines := strings.Split(bulk, "\n")
-		var added int
-		for _, line := range lines {
-			line = strings.TrimSpace(line)
-			if line == "" {
+		var items []struct {
+			Name    string `json:"name"`
+			Status  string `json:"status"`
+			Season  int    `json:"season"`
+			Episode int    `json:"episode"`
+			Date    string `json:"date"`
+		}
+		if err := c.ShouldBindJSON(&items); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input format"})
+			return
+		}
+		added, errors := 0, 0
+		for _, item := range items {
+			if item.Name == "" || item.Status == "" || item.Season < 1 || item.Episode < 1 {
+				errors++
 				continue
 			}
-			// Expected format: Name | Status: ... | Season: ... | Episode: ... | Date: ...
-			parts := strings.Split(line, "|")
-			if len(parts) < 5 {
-				continue
-			}
-			name := strings.TrimSpace(parts[0])
-			status := strings.TrimSpace(strings.TrimPrefix(parts[1], "Status:"))
-			seasonStr := strings.TrimSpace(strings.TrimPrefix(parts[2], "Season:"))
-			episodeStr := strings.TrimSpace(strings.TrimPrefix(parts[3], "Episode:"))
-			date := strings.TrimSpace(strings.TrimPrefix(parts[4], "Date:"))
-			season, _ := strconv.Atoi(seasonStr)
-			episode, _ := strconv.Atoi(episodeStr)
-
 			tvShow := models.TVShow{
 				UserID:    userID.(string),
-				Name:      name,
-				Status:    status,
-				Season:    season,
-				Episode:   episode,
-				Date:      date,
+				Name:      item.Name,
+				Status:    models.Status(item.Status),
+				Season:    item.Season,
+				Episode:   item.Episode,
+				Date:      item.Date,
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
 			if err := models.InsertTVShow(db, &tvShow); err == nil {
 				added++
+			} else {
+				errors++
 			}
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Added " + strconv.Itoa(added) + " TV shows"})
+		msg := "Added " + strconv.Itoa(added) + " TV shows."
+		if errors > 0 {
+			msg += " " + strconv.Itoa(errors) + " lines had errors."
+		}
+		c.JSON(http.StatusOK, gin.H{"message": msg})
 	}
 }

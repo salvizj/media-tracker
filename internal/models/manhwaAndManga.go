@@ -5,10 +5,19 @@ import (
 	"time"
 )
 
+type Status string
+
+const (
+	StatusReading   Status = "Reading"
+	StatusWatching  Status = "Watching"
+	StatusCompleted Status = "Completed"
+	StatusDropped   Status = "Dropped"
+)
+
 type ManhwaAndManga struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
-	Status    string    `json:"status"`
+	Status    Status    `json:"status"`
 	Date      string    `json:"date"`
 	Chapter   int       `json:"chapter"`
 	CreatedAt time.Time `json:"created_at"`
@@ -18,7 +27,7 @@ type ManhwaAndManga struct {
 
 type ManhwaAndMangaInput struct {
 	Name    string `json:"name"`
-	Status  string `json:"status"`
+	Status  Status `json:"status"`
 	Chapter int    `json:"chapter"`
 	UserID  string `json:"user_id"`
 }

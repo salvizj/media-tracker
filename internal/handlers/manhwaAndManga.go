@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"media_tracker/internal/models"
@@ -52,7 +51,7 @@ func CreateManhwaAndManga(db *sql.DB) gin.HandlerFunc {
 		manhwaAndManga := models.ManhwaAndManga{
 			UserID:    m.UserID,
 			Name:      m.Name,
-			Status:    m.Status,
+			Status:    models.Status(m.Status),
 			Chapter:   m.Chapter,
 			Date:      time.Now().Format("2006-01-02"),
 			CreatedAt: time.Now(),
@@ -129,7 +128,7 @@ func DownloadManhwaAndMangaHandler(db *sql.DB) gin.HandlerFunc {
 		c.Header("Content-Disposition", "attachment; filename=manhwa_and_manga.txt")
 		c.Header("Content-Type", "text/plain")
 		for _, entry := range entries {
-			line := entry.Name + " | Status: " + entry.Status + " | Chapter: " + strconv.Itoa(entry.Chapter) + " | Date: " + entry.Date + "\n"
+			line := entry.Name + " | Status: " + string(entry.Status) + " | Chapter: " + strconv.Itoa(entry.Chapter) + " | Date: " + entry.Date + "\n"
 			c.Writer.WriteString(line)
 		}
 	}
@@ -142,36 +141,41 @@ func BulkAddManhwaAndMangaHandler(db *sql.DB) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-		bulk := c.PostForm("bulk_manhwa_and_manga")
-		lines := strings.Split(bulk, "\n")
-		var added int
-		for _, line := range lines {
-			line = strings.TrimSpace(line)
-			if line == "" {
+		var items []struct {
+			Name    string `json:"name"`
+			Status  string `json:"status"`
+			Chapter int    `json:"chapter"`
+			Date    string `json:"date"`
+		}
+		if err := c.ShouldBindJSON(&items); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input format"})
+			return
+		}
+		added, errors := 0, 0
+		for _, item := range items {
+			if item.Name == "" || item.Status == "" || item.Chapter < 1 {
+				errors++
 				continue
 			}
-			// Expected format: Name | Status: ... | Chapter: ... | Date: ...
-			parts := strings.Split(line, "|")
-			if len(parts) < 4 {
-				continue
-			}
-			name := strings.TrimSpace(parts[0])
-			status := strings.TrimSpace(strings.TrimPrefix(parts[1], "Status:"))
-			chapterStr := strings.TrimSpace(strings.TrimPrefix(parts[2], "Chapter:"))
-			date := strings.TrimSpace(strings.TrimPrefix(parts[3], "Date:"))
-			chapter, _ := strconv.Atoi(chapterStr)
 			entry := models.ManhwaAndManga{
-				Name:      name,
-				Status:    status,
-				Chapter:   chapter,
-				Date:      date,
+				Name:      item.Name,
+				Status:    models.Status(item.Status),
+				Chapter:   item.Chapter,
+				Date:      item.Date,
 				UserID:    userID.(string),
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			}
-			_ = models.InsertManhwaAndManga(db, &entry)
-			added++
+			if err := models.InsertManhwaAndManga(db, &entry); err == nil {
+				added++
+			} else {
+				errors++
+			}
 		}
-		c.Redirect(http.StatusSeeOther, "/manhwa-and-manga")
+		msg := "Added " + strconv.Itoa(added) + " manhwa/manga."
+		if errors > 0 {
+			msg += " " + strconv.Itoa(errors) + " lines had errors."
+		}
+		c.JSON(http.StatusOK, gin.H{"message": msg})
 	}
 }
