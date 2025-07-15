@@ -1,33 +1,33 @@
 {{define "content_movies"}}
-<h2 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">Movies</h2>
+<h2 class="text-3xl font-extrabold mb-6 text-stone-500 text-center">Movies</h2>
 <div class="flex justify-center mb-4">
 	<a
 		href="/download/movies"
-		class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-2 rounded font-semibold shadow transition"
+		class="bg-stone-500 hover:bg-stone-600 text-white px-6 py-2 rounded font-semibold shadow transition"
 		>Download All Movies (TXT)</a
 	>
 </div>
 <div class="flex justify-center mb-8">
 	<form
 		id="bulkMoviesForm"
-		class="w-full max-w-2xl bg-slate-100 p-4 rounded shadow"
+		class="w-full max-w-2xl bg-stone-200 p-4 rounded shadow"
 	>
-		<label for="bulk_movies" class="block font-semibold mb-2"
+		<label for="bulk_movies" class="block font-semibold mb-2 text-stone-800"
 			>Bulk Add Movies</label
 		>
-		<p class="text-sm text-gray-600 mb-2">
+		<p class="text-sm text-stone-600 mb-2">
 			Paste one movie per line, format: <br /><code>Name | Date</code>
 		</p>
 		<textarea
 			id="bulk_movies"
 			name="bulk_movies"
 			rows="5"
-			class="w-full border border-gray-300 rounded p-2 mb-2 text-gray-600"
+			class="w-full border border-stone-300 rounded p-2 mb-2 text-stone-600"
 			placeholder="Paste here..."
 		></textarea>
 		<button
 			type="submit"
-			class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded font-semibold"
+			class="bg-stone-600 hover:bg-stone-700 text-white px-4 py-2 rounded font-semibold"
 		>
 			Bulk Add
 		</button>
@@ -44,11 +44,11 @@
 		name="name"
 		placeholder="Movie Name"
 		required
-		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+		class="w-full sm:flex-1 px-4 py-3 border border-stone-300 focus:outline-none focus:ring-4 focus:ring-stone-400 transition"
 	/>
 	<button
 		type="submit"
-		class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 font-semibold transition"
+		class="bg-stone-600 hover:bg-stone-700 text-white px-6 py-3 font-semibold transition"
 	>
 		Add Movie
 	</button>
@@ -58,7 +58,7 @@
 	id="movieSearchForm"
 	class="flex flex-col items-center justify-center gap-3 mb-8 max-w-md mx-auto"
 >
-	<h3 class="text-3xl font-extrabold mb-6 text-teal-500 text-center">
+	<h3 class="text-3xl font-extrabold mb-6 text-stone-500 text-center">
 		Search for Movies
 	</h3>
 	<input
@@ -67,14 +67,14 @@
 		name="name"
 		placeholder="Search Movies"
 		required
-		class="w-full sm:flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-teal-400 transition"
+		class="w-full sm:flex-1 px-4 py-3 border border-stone-300 focus:outline-none focus:ring-4 focus:ring-stone-400 transition"
 	/>
 </form>
 
 <ul class="space-y-2">
 	{{range .Movies}}
 	<li
-		class="movie-item flex flex-col bg-slate-200 px-4 py-2 shadow w-full gap-2"
+		class="movie-item flex flex-col bg-stone-200 px-4 py-2 shadow w-full gap-2"
 		data-id="{{.ID}}"
 	>
 		<div
@@ -82,10 +82,10 @@
 		>
 			<div>
 				<span
-					class="movie-item-name font-semibold text-gray-800 text-lg"
+					class="movie-item-name font-semibold text-stone-800 text-lg"
 					>{{.Name}}</span
 				>
-				<span class="block text-sm text-gray-500 mt-1">{{.Date}}</span>
+				<span class="block text-sm text-stone-500 mt-1">{{.Date}}</span>
 			</div>
 		</div>
 
@@ -93,7 +93,7 @@
 			class="flex flex-wrap items-center justify-start sm:justify-end gap-2"
 		>
 			<button
-				class="movies-action-btn bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
+				class="movies-action-btn bg-stone-500 hover:bg-stone-600 text-white px-4 py-2 rounded font-semibold text-sm shadow-sm transition"
 				type="button"
 				data-method="PUT"
 			>
@@ -109,7 +109,7 @@
 		</div>
 
 		<form
-			class="edit-movies-form flex flex-col sm:flex-row gap-2 mt-2 hidden w-full text-slate-600"
+			class="edit-movies-form flex flex-col sm:flex-row gap-2 mt-2 hidden w-full text-stone-600"
 			data-id="{{.ID}}"
 		>
 			<input type="hidden" name="id" value="{{.ID}}" />
@@ -125,12 +125,12 @@
 				name="name"
 				value="{{.Name}}"
 				required
-				class="w-full sm:flex-1 px-2 py-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-400 text-sm"
+				class="w-full sm:flex-1 px-2 py-1 border border-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400 text-sm"
 			/>
 			<div class="flex gap-2">
 				<button
 					type="submit"
-					class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
+					class="bg-stone-500 hover:bg-stone-600 text-white px-4 py-2 rounded-md font-semibold text-base shadow-sm transition"
 				>
 					Save
 				</button>
@@ -143,7 +143,7 @@
 			</div>
 		</form>
 		{{else}}
-		<p class="text-gray-300 italic text-xl text-center">
+		<p class="text-stone-300 italic text-xl text-center">
 			No Movies added yet
 		</p>
 		{{end}}

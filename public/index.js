@@ -272,6 +272,19 @@ function initializeStatusFilter() {
 		})
 	})
 }
+function getQueryParam(param) {
+	const urlParams = new URLSearchParams(window.location.search)
+	return urlParams.get(param) || ""
+}
+function setQueryParam(param, value) {
+	const url = new URL(window.location)
+	if (value) {
+		url.searchParams.set(param, value)
+	} else {
+		url.searchParams.delete(param)
+	}
+	window.history.replaceState({}, "", url)
+}
 function setupSearchFormForType(formId, itemClass, itemNameClass) {
 	const form = document.getElementById(formId)
 	if (form) {
@@ -279,13 +292,12 @@ function setupSearchFormForType(formId, itemClass, itemNameClass) {
 		const searchInput = form.querySelector('input[name="name"]')
 		searchInput.addEventListener("input", function () {
 			const searchVal = searchInput.value.trim().toLowerCase()
-
+			setQueryParam(formId + "_search", searchInput.value.trim())
 			itemsWhole.forEach((item) => {
 				const itemName = item.querySelector(`.${itemNameClass}`)
 				const itemNameText = itemName
 					? itemName.textContent.toLowerCase()
 					: ""
-
 				if (itemNameText.includes(searchVal)) {
 					item.style.display = ""
 				} else {
@@ -293,6 +305,11 @@ function setupSearchFormForType(formId, itemClass, itemNameClass) {
 				}
 			})
 		})
+		const initialVal = getQueryParam(formId + "_search")
+		if (initialVal) {
+			searchInput.value = initialVal
+			searchInput.dispatchEvent(new Event("input"))
+		}
 	}
 }
 
